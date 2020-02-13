@@ -251,21 +251,29 @@ final class FactoryWriter {
 //Branch Id 14
 
         if (parameters.hasNext()) {
-//Branch Id 15
+//Branch Id 14
           MyCoveregeData.addFactoryMethodsBC[14] = true; 
 
           args.add(", ");
         } 
         else {
-//Branch Id 16
+//Branch Id 15
          MyCoveregeData.addFactoryMethodsBC[15] = true; 
 
           // ADDED
         }
       }
+//Branch Id 16
+         MyCoveregeData.addFactoryMethodsBC[16] = true; 
+
+
       method.addStatement("return new $T($L)", methodDescriptor.returnType(), args.build());
       factory.addMethod(method.build());
     }
+    
+    //Branch Id 17
+     MyCoveregeData.addFactoryMethodsBC[17] = true; 
+
   }
 
   private static void addImplementationMethods(
