@@ -254,14 +254,23 @@ class BuilderSpec {
               getterToPropertyType,
               autoValueHasToBuilder);
       if (!optionalClassifier.isPresent()) {
+        AdrianInstrument.defineVars[0] = true;
         return;
+      } else {
+        AdrianInstrument.defineVars[1] = true;
       }
       this.classifier = optionalClassifier.get();
       Set<ExecutableElement> buildMethods = classifier.buildMethods();
       if (buildMethods.size() != 1) {
+        AdrianInstrument.defineVars[2] = true;
+        if(buildMethods.isEmpty())
+          AdrianInstrument.defineVars[3] = true;
+        else
+          AdrianInstrument.defineVars[4] = true;
         Set<? extends Element> errorElements =
             buildMethods.isEmpty() ? ImmutableSet.of(builderTypeElement) : buildMethods;
         for (Element buildMethod : errorElements) {
+          AdrianInstrument.defineVars[5] = true;
           errorReporter.reportError(
               "Builder must have a single no-argument method returning "
                   + autoValueClass
@@ -269,6 +278,8 @@ class BuilderSpec {
               buildMethod);
         }
         return;
+      } else {
+        AdrianInstrument.defineVars[6] = true;
       }
       this.buildMethod = Iterables.getOnlyElement(buildMethods);
       vars.builderIsInterface = builderTypeElement.getKind() == ElementKind.INTERFACE;
@@ -284,11 +295,20 @@ class BuilderSpec {
 
       Set<Property> required = new LinkedHashSet<>(vars.props);
       for (Property property : vars.props) {
+        AdrianInstrument.defineVars[7] = true;
         if (property.isNullable()
             || property.getOptional() != null
             || vars.builderPropertyBuilders.containsKey(property.getName())) {
+          if(property.isNullable())
+            AdrianInstrument.defineVars[8] = true;
+          else if (property.getOptional() != null)
+            AdrianInstrument.defineVars[9] = true;
+          else
+            AdrianInstrument.defineVars[10] = true;
+
           required.remove(property);
         }
+        AdrianInstrument.defineVars[11] = true;
       }
       vars.builderRequiredProperties = ImmutableSet.copyOf(required);
     }

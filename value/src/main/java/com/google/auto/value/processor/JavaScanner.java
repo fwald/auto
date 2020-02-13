@@ -55,25 +55,38 @@ class JavaScanner {
   /** Returns the position at which this token ends and the next token begins. */
   int tokenEnd(int start) {
     if (start >= s.length()) {
+      AdrianInstrument.tokenEnd[0] = true;
       return s.length();
+    } else {
+      AdrianInstrument.tokenEnd[1] = true;
     }
     switch (s.charAt(start)) {
       case ' ':
+        AdrianInstrument.tokenEnd[2] = true;
       case '\n':
+        AdrianInstrument.tokenEnd[3] = true;
         return spaceEnd(start);
       case '/':
+        AdrianInstrument.tokenEnd[4] = true;
         if (s.charAt(start + 1) == '*') {
+          AdrianInstrument.tokenEnd[5] = true;
           return blockCommentEnd(start);
         } else if (s.charAt(start + 1) == '/') {
+          AdrianInstrument.tokenEnd[6] = true;
           return lineCommentEnd(start);
         } else {
+          AdrianInstrument.tokenEnd[7] = true;
           return start + 1;
         }
       case '\'':
+        AdrianInstrument.tokenEnd[8] = true;
       case '"':
+        AdrianInstrument.tokenEnd[9] = true;
       case '`':
+        AdrianInstrument.tokenEnd[10] = true;
         return quoteEnd(start);
       default:
+        AdrianInstrument.tokenEnd[11] = true;
         // Every other character is considered to be its own token.
         return start + 1;
     }
