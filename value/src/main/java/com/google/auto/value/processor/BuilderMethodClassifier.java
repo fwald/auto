@@ -352,45 +352,85 @@ class BuilderMethodClassifier {
     String propertyName = null;
     ExecutableElement valueGetter = propertyNameToGetter.get(methodName);
     Multimap<String, PropertySetter> propertyNameToSetters = null;
+    System.out.print("classifyMethodOneArg - Branches taken:");
     if (valueGetter != null) {
+      //Branch 1
+      System.out.print("1, ");
+
       propertyNameToSetters = propertyNameToUnprefixedSetters;
       propertyName = methodName;
-    } else if (valueGetter == null && methodName.startsWith("set") && methodName.length() > 3) {
-      propertyNameToSetters = propertyNameToPrefixedSetters;
-      propertyName = PropertyNames.decapitalizeLikeJavaBeans(methodName.substring(3));
-      valueGetter = propertyNameToGetter.get(propertyName);
-      if (valueGetter == null) {
-        // If our property is defined by a getter called getOAuth() then it is called "OAuth"
-        // because of Introspector.decapitalize. Therefore we want Introspector.decapitalize to
-        // be used for the setter too, so that you can write setOAuth(x). Meanwhile if the property
-        // is defined by a getter called oAuth() then it is called "oAuth", but you would still
-        // expect to be able to set it using setOAuth(x). Hence the second try using a decapitalize
-        // method without the quirky two-leading-capitals rule.
-        propertyName = PropertyNames.decapitalizeNormally(methodName.substring(3));
+    } else {
+      //Branch 2
+      System.out.print("2, ");
+      if (valueGetter == null && methodName.startsWith("set") && methodName.length() > 3) {
+        //Branch 3
+        System.out.print("3, ");
+
+        propertyNameToSetters = propertyNameToPrefixedSetters;
+        propertyName = PropertyNames.decapitalizeLikeJavaBeans(methodName.substring(3));
         valueGetter = propertyNameToGetter.get(propertyName);
+        if (valueGetter == null) {
+          //Branch 4
+          System.out.print("4, ");
+
+          // If our property is defined by a getter called getOAuth() then it is called "OAuth"
+          // because of Introspector.decapitalize. Therefore we want Introspector.decapitalize to
+          // be used for the setter too, so that you can write setOAuth(x). Meanwhile if the property
+          // is defined by a getter called oAuth() then it is called "oAuth", but you would still
+          // expect to be able to set it using setOAuth(x). Hence the second try using a decapitalize
+          // method without the quirky two-leading-capitals rule.
+          propertyName = PropertyNames.decapitalizeNormally(methodName.substring(3));
+          valueGetter = propertyNameToGetter.get(propertyName);
+        } else {
+          //Branch 5
+          System.out.print("5, ");
+        }
+      } else {
+        //Branch 6
+        System.out.print("6, ");
       }
     }
+    
     if (valueGetter == null || propertyNameToSetters == null) {
+      //Branch 7
+      System.out.println("7.");
+
       // The second disjunct isn't needed but convinces control-flow checkers that
       // propertyNameToSetters can't be null when we call put on it below.
       errorReporter.reportError(
           "Method does not correspond to a property of " + autoValueClass, method);
       checkForFailedJavaBean(method);
       return;
+    } else {
+      //Branch 8
+      System.out.print("8, ");
     }
+
     Optional<Function<String, String>> function = getSetterFunction(valueGetter, method);
     if (function.isPresent()) {
+      //Branch 9
+      System.out.print("9, ");
+
       DeclaredType builderTypeMirror = MoreTypes.asDeclared(builderType.asType());
       ExecutableType methodMirror =
           MoreTypes.asExecutable(typeUtils.asMemberOf(builderTypeMirror, method));
       if (TYPE_EQUIVALENCE.equivalent(methodMirror.getReturnType(), builderType.asType())) {
+        //Branch 10
+        System.out.println("10.");
+
         TypeMirror parameterType = Iterables.getOnlyElement(methodMirror.getParameterTypes());
         propertyNameToSetters.put(
             propertyName, new PropertySetter(method, parameterType, function.get()));
       } else {
+        //Branch 11
+        System.out.println("11.");
+
         errorReporter.reportError(
             "Setter methods must return " + builderType + typeParamsString(), method);
       }
+    } else {
+      //Branch 12
+      System.out.println("12.");
     }
   }
 
