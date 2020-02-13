@@ -87,7 +87,6 @@ public class AutoFactoryProcessorTest {
   @AfterClass public static void report(){
     try {
       PrintWriter writer = new PrintWriter(new BufferedWriter( new FileWriter("testlog.txt"))); 
-      // String methodName = "FactoryWriter.addFactoryMethods()";
 
       writeReport(
         writer, 
@@ -103,21 +102,7 @@ public class AutoFactoryProcessorTest {
         "AutoFactoryProcessor.doProcess()"
         );
 
-      // writer.println("Coverage Test for method " + methodName);
-      // writer.println("Method has in total " + MyCoveregeData.addFactoryNumBranches + " branches");
-      // writer.println("Results:");
-
-      // int countCoverage = 0;
-
-      // for ( int i = 0; i < MyCoveregeData.addFactoryNumBranches; i++ ){
-      //     writer.println("Branch with id: " + i + " " + "was covered by test: " + MyCoveregeData.addFactoryMethodsBC[i] );
-      //     countCoverage +=  MyCoveregeData.addFactoryMethodsBC[i] ? 1 : 0 ; 
-      // }
-       
-
-      //   float ratio = ((float) countCoverage) / ((float)  MyCoveregeData.addFactoryNumBranches);
-      //   ratio *= 100.0;
-      //   writer.println("Total branch coverage: " + ratio + "%");
+      
         writer.flush();
         writer.close();
     
