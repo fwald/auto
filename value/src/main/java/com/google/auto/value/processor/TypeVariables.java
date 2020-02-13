@@ -136,33 +136,58 @@ final class TypeVariables {
       TypeMirror actualParameterType,
       TypeMirror targetType,
       Types typeUtils) {
+        System.out.print("canAssignStaticMethodResult - Branches taken:");
     if (!targetType.getKind().equals(TypeKind.DECLARED)
         || !method.getModifiers().contains(Modifier.STATIC)
         || method.getParameters().size() != 1) {
+          // Branch 1
+          System.out.print("1, ");
       return false;
+    } else {
+      // Branch 2
+      System.out.print("2, ");
     }
     List<? extends TypeParameterElement> typeParameters = method.getTypeParameters();
     List<? extends TypeMirror> targetTypeArguments =
         MoreTypes.asDeclared(targetType).getTypeArguments();
     if (typeParameters.size() != targetTypeArguments.size()) {
+      // Branch 3
+      System.out.print("3, ");
       return false;
+    } else {
+      // Branch 4
+      System.out.print("4, ");
     }
     Map<Equivalence.Wrapper<TypeVariable>, TypeMirror> typeVariables = new LinkedHashMap<>();
     for (int i = 0; i < typeParameters.size(); i++) {
+      // Branch 5
+      System.out.print("5, ");
       TypeVariable v = MoreTypes.asTypeVariable(typeParameters.get(i).asType());
       typeVariables.put(MoreTypes.equivalence().wrap(v), targetTypeArguments.get(i));
     }
+    // Branch 6
+    System.out.print("6, ");
     TypeMirror formalParameterType = method.getParameters().get(0).asType();
     SubstitutionVisitor substitutionVisitor = new SubstitutionVisitor(typeVariables, typeUtils);
     TypeMirror substitutedParameterType = substitutionVisitor.visit(formalParameterType, null);
     if (substitutedParameterType.getKind().equals(TypeKind.WILDCARD)) {
+      // Branch 7
+      System.out.print("7, ");
       // If the target type is Optional<? extends Foo> then <T> T Optional.of(T) will give us
       // ? extends Foo here, and typeUtils.isAssignable will return false. But we can in fact
       // give a Foo as an argument, so we just replace ? extends Foo with Foo.
       WildcardType wildcard = MoreTypes.asWildcard(substitutedParameterType);
       if (wildcard.getExtendsBound() != null) {
+        // Branch 8
+        System.out.println("8.");
         substitutedParameterType = wildcard.getExtendsBound();
+      }else {
+        // Branch 9
+        System.out.println("9.");
       }
+    }else {
+      // Branch 10
+      System.out.println("10.");
     }
     return typeUtils.isAssignable(actualParameterType, substitutedParameterType);
   }
