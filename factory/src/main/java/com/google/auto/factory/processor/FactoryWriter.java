@@ -136,46 +136,131 @@ final class FactoryWriter {
       TypeSpec.Builder factory,
       FactoryDescriptor descriptor,
       ImmutableSet<TypeVariableName> factoryTypeVariables) {
+
+   
+
     for (FactoryMethodDescriptor methodDescriptor : descriptor.methodDescriptors()) {
+//Branch Id 0           
+      MyCoveregeData.branchCoverage[0] = true; 
+
       MethodSpec.Builder method =
           MethodSpec.methodBuilder(methodDescriptor.name())
               .addTypeVariables(getMethodTypeVariables(methodDescriptor, factoryTypeVariables))
               .returns(TypeName.get(methodDescriptor.returnType()))
               .varargs(methodDescriptor.isVarArgs());
+
+
       if (methodDescriptor.overridingMethod()) {
+//Branch Id 1
+          MyCoveregeData.branchCoverage[1] = true; 
+
+
         method.addAnnotation(Override.class);
+      }  
+      else { // ADDED
+//Branch Id 2
+
+          MyCoveregeData.branchCoverage[2] = true; 
+
       }
+
+
       if (methodDescriptor.publicMethod()) {
+//Branch Id 3
+        MyCoveregeData.branchCoverage[3] = true; 
+
         method.addModifiers(PUBLIC);
       }
+      else { // ADDED
+//Branch Id 4
+        
+        MyCoveregeData.branchCoverage[4] = true; 
+
+      }
+
       CodeBlock.Builder args = CodeBlock.builder();
       method.addParameters(parameters(methodDescriptor.passedParameters()));
       Iterator<Parameter> parameters = methodDescriptor.creationParameters().iterator();
       for (int argumentIndex = 1; parameters.hasNext(); argumentIndex++) {
+    
+//Branch Id 5
+        MyCoveregeData.branchCoverage[5] = true; 
+
         Parameter parameter = parameters.next();
         boolean checkNotNull = !parameter.nullable().isPresent();
         CodeBlock argument;
         if (methodDescriptor.passedParameters().contains(parameter)) {
+    
+//Branch Id 6
+          MyCoveregeData.branchCoverage[6] = true; 
+
           argument = CodeBlock.of(parameter.name());
           if (parameter.isPrimitive()) {
+      
+//Branch Id 7
+            MyCoveregeData.branchCoverage[7] = true; 
             checkNotNull = false;
+    
+
           }
+
+          else { // ADDED
+//Branch Id 8
+
+            MyCoveregeData.branchCoverage[8] = true; 
+
+          }
+
         } else {
+//Branch Id 9
+            MyCoveregeData.branchCoverage[9] = true; 
+
+
           ProviderField provider = descriptor.providers().get(parameter.key());
           argument = CodeBlock.of(provider.name());
+
           if (parameter.isProvider()) {
+//Branch Id 10
+            MyCoveregeData.branchCoverage[10] = true; 
+
             // Providers are checked for nullness in the Factory's constructor.
             checkNotNull = false;
-          } else {
+          } 
+
+          else {
+//Branch Id 11
+            MyCoveregeData.branchCoverage[11] = true; 
+
             argument = CodeBlock.of("$L.get()", argument);
           }
         }
+
         if (checkNotNull) {
+//Branch Id 12
+         MyCoveregeData.branchCoverage[12] = true; 
+
           argument = CodeBlock.of("checkNotNull($L, $L)", argument, argumentIndex);
         }
+        else { // ADDED
+//Branch Id 13
+         
+           MyCoveregeData.branchCoverage[13] = true; 
+
+        }
         args.add(argument);
+//Branch Id 14
+
         if (parameters.hasNext()) {
+//Branch Id 15
+          MyCoveregeData.branchCoverage[14] = true; 
+
           args.add(", ");
+        } 
+        else {
+//Branch Id 16
+         MyCoveregeData.branchCoverage[15] = true; 
+
+          // ADDED
         }
       }
       method.addStatement("return new $T($L)", methodDescriptor.returnType(), args.build());

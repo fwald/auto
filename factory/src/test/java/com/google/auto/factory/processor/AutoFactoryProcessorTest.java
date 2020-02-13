@@ -33,14 +33,68 @@ import javax.lang.model.SourceVersion;
 import javax.tools.JavaFileObject;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.BeforeClass;
+import org.junit.AfterClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+
 
 /**
  * Functional tests for the {@link AutoFactoryProcessor}.
  */
 @RunWith(JUnit4.class)
 public class AutoFactoryProcessorTest {
+
+  static int NUM_BRANCHES = 17; 
+
+  @BeforeClass  public static void init(){
+    // MyCoveregeData.branchCoverage = new ArrayList<Boolean>();  
+  
+     for (int i = 0; i < NUM_BRANCHES; i++){
+        MyCoveregeData.branchCoverage[i] = false;
+    }
+  }
+
+  @AfterClass public static void report(){
+    try {
+      PrintWriter writer = new PrintWriter(new BufferedWriter( new FileWriter("testlog.txt"))); 
+      String methodName = "FactoryWriter.addFactoryMethods()";
+
+      writer.println("Coverage Test for method " + methodName);
+      writer.println("Method has in total " + NUM_BRANCHES + " branches");
+      writer.println("Results:");
+
+          int countCoverage = 0;
+
+        for ( int i = 0; i < NUM_BRANCHES; i++ ){
+          writer.println("Branch with id: " + i + " " + "was covered by test: " + MyCoveregeData.branchCoverage[i] );
+         countCoverage +=  MyCoveregeData.branchCoverage[i] ? 1 : 0 ; 
+        }
+       
+
+       
+
+         float ratio = ((float) countCoverage) / ((float)  NUM_BRANCHES);
+          ratio *= 100.0;
+        writer.println("Total branch coverage: " + ratio + "%");
+        writer.flush();
+        writer.close();
+    
+    }
+    catch (Exception exc ){
+      System.out.println(exc.toString());
+    }
+  
+
+  }
+
+
+  
+
 
   @Rule public final CompilationRule compilationRule = new CompilationRule();
 
