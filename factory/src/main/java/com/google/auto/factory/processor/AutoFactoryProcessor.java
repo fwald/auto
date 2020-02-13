@@ -102,8 +102,8 @@ public final class AutoFactoryProcessor extends AbstractProcessor {
 
 
     for (Element element : roundEnv.getElementsAnnotatedWith(Provided.class)) {
-    //branchId1
-      MyCoveregeData.doProcess[0] = true; 
+    //branchId 0
+      MyCoveregeData.doProcessBC[0] = true; 
 
       providedChecker.checkProvidedParameter(element);
     }
@@ -113,21 +113,42 @@ public final class AutoFactoryProcessor extends AbstractProcessor {
     ImmutableSetMultimap.Builder<String, ImplementationMethodDescriptor>
         implementationMethodDescriptorsBuilder = ImmutableSetMultimap.builder();
     for (Element element : roundEnv.getElementsAnnotatedWith(AutoFactory.class)) {
+    //branchId 1
+      MyCoveregeData.doProcessBC[1] = true; 
+
+
       Optional<AutoFactoryDeclaration> declaration = declarationFactory.createIfValid(element);
       if (declaration.isPresent()) {
+      //branchId 2
+      MyCoveregeData.doProcessBC[2] = true; 
+
+
         String factoryName = declaration.get().getFactoryName();
         TypeElement extendingType = declaration.get().extendingType();
         implementationMethodDescriptorsBuilder.putAll(
             factoryName, implementationMethods(extendingType, element));
         for (TypeElement implementingType : declaration.get().implementingTypes()) {
+         //branchId 3
+        MyCoveregeData.doProcessBC[3] = true; 
+
           implementationMethodDescriptorsBuilder.putAll(
               factoryName, implementationMethods(implementingType, element));
         }
       }
 
+      else { //ADDED
+        //branchId 4
+        MyCoveregeData.doProcessBC[4] = true; 
+
+      }
+
       ImmutableSet<FactoryMethodDescriptor> descriptors =
           factoryDescriptorGenerator.generateDescriptor(element);
+
       for (FactoryMethodDescriptor descriptor : descriptors) {
+         //branchId 5
+        MyCoveregeData.doProcessBC[5] = true; 
+
         indexedMethods.put(descriptor.factoryName(), descriptor);
       }
     }
@@ -137,6 +158,11 @@ public final class AutoFactoryProcessor extends AbstractProcessor {
 
     for (Entry<String, Collection<FactoryMethodDescriptor>> entry
         : indexedMethods.build().asMap().entrySet()) {
+    
+    //branchId 6
+      MyCoveregeData.doProcessBC[6] = true; 
+
+
       ImmutableSet.Builder<TypeMirror> extending = ImmutableSet.builder();
       ImmutableSortedSet.Builder<TypeMirror> implementing =
           ImmutableSortedSet.orderedBy(
@@ -145,21 +171,41 @@ public final class AutoFactoryProcessor extends AbstractProcessor {
                 public int compare(TypeMirror first, TypeMirror second) {
                   String firstName = MoreTypes.asTypeElement(first).getQualifiedName().toString();
                   String secondName = MoreTypes.asTypeElement(second).getQualifiedName().toString();
+
                   return firstName.compareTo(secondName);
                 }
               });
       boolean publicType = false;
       Boolean allowSubclasses = null;
       boolean skipCreation = false;
+
       for (FactoryMethodDescriptor methodDescriptor : entry.getValue()) {
+
+      //branchId 7
+      MyCoveregeData.doProcessBC[7] = true; 
+
+
         extending.add(methodDescriptor.declaration().extendingType().asType());
         for (TypeElement implementingType : methodDescriptor.declaration().implementingTypes()) {
+          
+        //branchId 8
+        MyCoveregeData.doProcessBC[8] = true; 
+
           implementing.add(implementingType.asType());
         }
         publicType |= methodDescriptor.publicMethod();
         if (allowSubclasses == null) {
+        //branchId 9
+        MyCoveregeData.doProcessBC[9] = true; 
+
+
           allowSubclasses = methodDescriptor.declaration().allowSubclasses();
         } else if (!allowSubclasses.equals(methodDescriptor.declaration().allowSubclasses())) {
+          
+         //branchId 10
+          MyCoveregeData.doProcessBC[10] = true; 
+
+
           skipCreation = true;
           messager.printMessage(Kind.ERROR,
               "Cannot mix allowSubclasses=true and allowSubclasses=false in one factory.",
@@ -167,9 +213,18 @@ public final class AutoFactoryProcessor extends AbstractProcessor {
               methodDescriptor.declaration().mirror(),
               methodDescriptor.declaration().valuesMap().get("allowSubclasses"));
         }
+        else { //ADDED
+             //branchId 11
+          MyCoveregeData.doProcessBC[11] = true; 
+
+        }
       }
       if (!skipCreation) {
+           //branchId 12
+          MyCoveregeData.doProcessBC[12] = true; 
+
         try {
+
           factoryWriter.writeFactory(
               FactoryDescriptor.create(
                   entry.getKey(),
@@ -180,6 +235,9 @@ public final class AutoFactoryProcessor extends AbstractProcessor {
                   implementationMethodDescriptors.get(entry.getKey()),
                   allowSubclasses));
         } catch (IOException e) {
+          //branchId 13
+          MyCoveregeData.doProcessBC[13] = true; 
+         
           messager.printMessage(Kind.ERROR, "failed: " + e);
         }
       }

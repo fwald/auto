@@ -49,37 +49,75 @@ import java.io.PrintWriter;
 @RunWith(JUnit4.class)
 public class AutoFactoryProcessorTest {
 
-  static int NUM_BRANCHES = 17; 
 
   @BeforeClass  public static void init(){
   
      for (int i = 0; i < MyCoveregeData.addFactoryNumBranches; i++){
         MyCoveregeData.addFactoryMethodsBC[i] = false;
     }
+
+    for (int i = 0; i < MyCoveregeData.doProcessNumBranches; i++){
+          MyCoveregeData.doProcessBC[i] = false;
+      }
+
+
   }
+
+  static void writeReport(PrintWriter pw, boolean[] flags, int numFlags, String methodName )  {
+
+
+      pw.println("Coverage Test for method " + methodName);
+      pw.println("Method has in total " + numFlags + " branches");
+      pw.println("Results:");
+
+      int countCoverage = 0;
+
+      for ( int i = 0; i < numFlags; i++ ){
+          pw.println("Branch with id: " + i + " " + "was covered by test: " + flags[i] );
+          countCoverage +=  flags[i] ? 1 : 0 ; 
+      }
+    
+      float ratio = ((float) countCoverage) / ((float)  numFlags);
+      ratio *= 100.0;
+      pw.println("Total branch coverage: " + ratio + "%");
+
+  }
+
 
   @AfterClass public static void report(){
     try {
       PrintWriter writer = new PrintWriter(new BufferedWriter( new FileWriter("testlog.txt"))); 
-      String methodName = "FactoryWriter.addFactoryMethods()";
+      // String methodName = "FactoryWriter.addFactoryMethods()";
 
-      writer.println("Coverage Test for method " + methodName);
-      writer.println("Method has in total " + MyCoveregeData.addFactoryNumBranches + " branches");
-      writer.println("Results:");
+      writeReport(
+        writer, 
+        MyCoveregeData.addFactoryMethodsBC,
+        MyCoveregeData.addFactoryNumBranches, 
+        "FactoryWriter.addFactoryMethods"
+        );
 
-          int countCoverage = 0;
+      writeReport(
+        writer, 
+        MyCoveregeData.doProcessBC,
+        MyCoveregeData.doProcessNumBranches, 
+        "AutoFactoryProcessor.doProcess()"
+        );
 
-        for ( int i = 0; i < MyCoveregeData.addFactoryNumBranches; i++ ){
-          writer.println("Branch with id: " + i + " " + "was covered by test: " + MyCoveregeData.addFactoryMethodsBC[i] );
-         countCoverage +=  MyCoveregeData.addFactoryMethodsBC[i] ? 1 : 0 ; 
-        }
+      // writer.println("Coverage Test for method " + methodName);
+      // writer.println("Method has in total " + MyCoveregeData.addFactoryNumBranches + " branches");
+      // writer.println("Results:");
+
+      // int countCoverage = 0;
+
+      // for ( int i = 0; i < MyCoveregeData.addFactoryNumBranches; i++ ){
+      //     writer.println("Branch with id: " + i + " " + "was covered by test: " + MyCoveregeData.addFactoryMethodsBC[i] );
+      //     countCoverage +=  MyCoveregeData.addFactoryMethodsBC[i] ? 1 : 0 ; 
+      // }
        
 
-       
-
-         float ratio = ((float) countCoverage) / ((float)  MyCoveregeData.addFactoryNumBranches);
-          ratio *= 100.0;
-        writer.println("Total branch coverage: " + ratio + "%");
+      //   float ratio = ((float) countCoverage) / ((float)  MyCoveregeData.addFactoryNumBranches);
+      //   ratio *= 100.0;
+      //   writer.println("Total branch coverage: " + ratio + "%");
         writer.flush();
         writer.close();
     

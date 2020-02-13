@@ -1,4 +1,4 @@
-Coverage Test for method FactoryWriter.addFactoryMethods()
+Coverage Test for method FactoryWriter.addFactoryMethods
 Method has in total 17 branches
 Results:
 Branch with id: 0 was covered by test: true
@@ -19,3 +19,21 @@ Branch with id: 14 was covered by test: true
 Branch with id: 15 was covered by test: true
 Branch with id: 16 was covered by test: false
 Total branch coverage: 94.117645%
+Coverage Test for method AutoFactoryProcessor.doProcess()
+Method has in total 14 branches
+Results:
+Branch with id: 0 was covered by test: true
+Branch with id: 1 was covered by test: true
+Branch with id: 2 was covered by test: true
+Branch with id: 3 was covered by test: true
+Branch with id: 4 was covered by test: true
+Branch with id: 5 was covered by test: true
+Branch with id: 6 was covered by test: true
+Branch with id: 7 was covered by test: true
+Branch with id: 8 was covered by test: true
+Branch with id: 9 was covered by test: true
+Branch with id: 10 was covered by test: true
+Branch with id: 11 was covered by test: true
+Branch with id: 12 was covered by test: true
+Branch with id: 13 was covered by test: false
+Total branch coverage: 92.85714%
