@@ -99,6 +99,9 @@ public final class AutoFactoryProcessor extends AbstractProcessor {
   }
 
   private void doProcess(RoundEnvironment roundEnv) {
+
+//
+
     for (Element element : roundEnv.getElementsAnnotatedWith(Provided.class)) {
       providedChecker.checkProvidedParameter(element);
     }

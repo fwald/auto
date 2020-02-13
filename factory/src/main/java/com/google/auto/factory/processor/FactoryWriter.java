@@ -141,7 +141,7 @@ final class FactoryWriter {
 
     for (FactoryMethodDescriptor methodDescriptor : descriptor.methodDescriptors()) {
 //Branch Id 0           
-      MyCoveregeData.branchCoverage[0] = true; 
+      MyCoveregeData.addFactoryMethodsBC[0] = true; 
 
       MethodSpec.Builder method =
           MethodSpec.methodBuilder(methodDescriptor.name())
@@ -152,7 +152,7 @@ final class FactoryWriter {
 
       if (methodDescriptor.overridingMethod()) {
 //Branch Id 1
-          MyCoveregeData.branchCoverage[1] = true; 
+          MyCoveregeData.addFactoryMethodsBC[1] = true; 
 
 
         method.addAnnotation(Override.class);
@@ -160,21 +160,21 @@ final class FactoryWriter {
       else { // ADDED
 //Branch Id 2
 
-          MyCoveregeData.branchCoverage[2] = true; 
+          MyCoveregeData.addFactoryMethodsBC[2] = true; 
 
       }
 
 
       if (methodDescriptor.publicMethod()) {
 //Branch Id 3
-        MyCoveregeData.branchCoverage[3] = true; 
+        MyCoveregeData.addFactoryMethodsBC[3] = true; 
 
         method.addModifiers(PUBLIC);
       }
       else { // ADDED
 //Branch Id 4
         
-        MyCoveregeData.branchCoverage[4] = true; 
+        MyCoveregeData.addFactoryMethodsBC[4] = true; 
 
       }
 
@@ -184,7 +184,7 @@ final class FactoryWriter {
       for (int argumentIndex = 1; parameters.hasNext(); argumentIndex++) {
     
 //Branch Id 5
-        MyCoveregeData.branchCoverage[5] = true; 
+        MyCoveregeData.addFactoryMethodsBC[5] = true; 
 
         Parameter parameter = parameters.next();
         boolean checkNotNull = !parameter.nullable().isPresent();
@@ -192,13 +192,13 @@ final class FactoryWriter {
         if (methodDescriptor.passedParameters().contains(parameter)) {
     
 //Branch Id 6
-          MyCoveregeData.branchCoverage[6] = true; 
+          MyCoveregeData.addFactoryMethodsBC[6] = true; 
 
           argument = CodeBlock.of(parameter.name());
           if (parameter.isPrimitive()) {
       
 //Branch Id 7
-            MyCoveregeData.branchCoverage[7] = true; 
+            MyCoveregeData.addFactoryMethodsBC[7] = true; 
             checkNotNull = false;
     
 
@@ -207,13 +207,13 @@ final class FactoryWriter {
           else { // ADDED
 //Branch Id 8
 
-            MyCoveregeData.branchCoverage[8] = true; 
+            MyCoveregeData.addFactoryMethodsBC[8] = true; 
 
           }
 
         } else {
 //Branch Id 9
-            MyCoveregeData.branchCoverage[9] = true; 
+            MyCoveregeData.addFactoryMethodsBC[9] = true; 
 
 
           ProviderField provider = descriptor.providers().get(parameter.key());
@@ -221,7 +221,7 @@ final class FactoryWriter {
 
           if (parameter.isProvider()) {
 //Branch Id 10
-            MyCoveregeData.branchCoverage[10] = true; 
+            MyCoveregeData.addFactoryMethodsBC[10] = true; 
 
             // Providers are checked for nullness in the Factory's constructor.
             checkNotNull = false;
@@ -229,7 +229,7 @@ final class FactoryWriter {
 
           else {
 //Branch Id 11
-            MyCoveregeData.branchCoverage[11] = true; 
+            MyCoveregeData.addFactoryMethodsBC[11] = true; 
 
             argument = CodeBlock.of("$L.get()", argument);
           }
@@ -237,14 +237,14 @@ final class FactoryWriter {
 
         if (checkNotNull) {
 //Branch Id 12
-         MyCoveregeData.branchCoverage[12] = true; 
+         MyCoveregeData.addFactoryMethodsBC[12] = true; 
 
           argument = CodeBlock.of("checkNotNull($L, $L)", argument, argumentIndex);
         }
         else { // ADDED
 //Branch Id 13
          
-           MyCoveregeData.branchCoverage[13] = true; 
+           MyCoveregeData.addFactoryMethodsBC[13] = true; 
 
         }
         args.add(argument);
@@ -252,13 +252,13 @@ final class FactoryWriter {
 
         if (parameters.hasNext()) {
 //Branch Id 15
-          MyCoveregeData.branchCoverage[14] = true; 
+          MyCoveregeData.addFactoryMethodsBC[14] = true; 
 
           args.add(", ");
         } 
         else {
 //Branch Id 16
-         MyCoveregeData.branchCoverage[15] = true; 
+         MyCoveregeData.addFactoryMethodsBC[15] = true; 
 
           // ADDED
         }

@@ -52,10 +52,9 @@ public class AutoFactoryProcessorTest {
   static int NUM_BRANCHES = 17; 
 
   @BeforeClass  public static void init(){
-    // MyCoveregeData.branchCoverage = new ArrayList<Boolean>();  
   
      for (int i = 0; i < NUM_BRANCHES; i++){
-        MyCoveregeData.branchCoverage[i] = false;
+        MyCoveregeData.addFactoryMethodsBC[i] = false;
     }
   }
 
@@ -71,8 +70,8 @@ public class AutoFactoryProcessorTest {
           int countCoverage = 0;
 
         for ( int i = 0; i < NUM_BRANCHES; i++ ){
-          writer.println("Branch with id: " + i + " " + "was covered by test: " + MyCoveregeData.branchCoverage[i] );
-         countCoverage +=  MyCoveregeData.branchCoverage[i] ? 1 : 0 ; 
+          writer.println("Branch with id: " + i + " " + "was covered by test: " + MyCoveregeData.addFactoryMethodsBC[i] );
+         countCoverage +=  MyCoveregeData.addFactoryMethodsBC[i] ? 1 : 0 ; 
         }
        
 
