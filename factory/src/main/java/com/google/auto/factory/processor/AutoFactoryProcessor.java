@@ -100,9 +100,11 @@ public final class AutoFactoryProcessor extends AbstractProcessor {
 
   private void doProcess(RoundEnvironment roundEnv) {
 
-//
 
     for (Element element : roundEnv.getElementsAnnotatedWith(Provided.class)) {
+    //branchId1
+      MyCoveregeData.doProcess[0] = true; 
+
       providedChecker.checkProvidedParameter(element);
     }
 

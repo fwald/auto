@@ -53,7 +53,7 @@ public class AutoFactoryProcessorTest {
 
   @BeforeClass  public static void init(){
   
-     for (int i = 0; i < NUM_BRANCHES; i++){
+     for (int i = 0; i < MyCoveregeData.addFactoryNumBranches; i++){
         MyCoveregeData.addFactoryMethodsBC[i] = false;
     }
   }
@@ -64,12 +64,12 @@ public class AutoFactoryProcessorTest {
       String methodName = "FactoryWriter.addFactoryMethods()";
 
       writer.println("Coverage Test for method " + methodName);
-      writer.println("Method has in total " + NUM_BRANCHES + " branches");
+      writer.println("Method has in total " + MyCoveregeData.addFactoryNumBranches + " branches");
       writer.println("Results:");
 
           int countCoverage = 0;
 
-        for ( int i = 0; i < NUM_BRANCHES; i++ ){
+        for ( int i = 0; i < MyCoveregeData.addFactoryNumBranches; i++ ){
           writer.println("Branch with id: " + i + " " + "was covered by test: " + MyCoveregeData.addFactoryMethodsBC[i] );
          countCoverage +=  MyCoveregeData.addFactoryMethodsBC[i] ? 1 : 0 ; 
         }
@@ -77,7 +77,7 @@ public class AutoFactoryProcessorTest {
 
        
 
-         float ratio = ((float) countCoverage) / ((float)  NUM_BRANCHES);
+         float ratio = ((float) countCoverage) / ((float)  MyCoveregeData.addFactoryNumBranches);
           ratio *= 100.0;
         writer.println("Total branch coverage: " + ratio + "%");
         writer.flush();
