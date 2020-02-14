@@ -140,54 +140,54 @@ final class TypeVariables {
     if (!targetType.getKind().equals(TypeKind.DECLARED)
         || !method.getModifiers().contains(Modifier.STATIC)
         || method.getParameters().size() != 1) {
-          // Branch 1
-          System.out.println("1.");
+          // Branch 0
+          RuwaidInstrumentation.canAssignStaticMethodResultBranches[0] = 1;
       return false;
     } else {
-      // Branch 2
-      System.out.print("2, ");
+      // Branch 1
+      RuwaidInstrumentation.canAssignStaticMethodResultBranches[1] = 1;
     }
     List<? extends TypeParameterElement> typeParameters = method.getTypeParameters();
     List<? extends TypeMirror> targetTypeArguments =
         MoreTypes.asDeclared(targetType).getTypeArguments();
     if (typeParameters.size() != targetTypeArguments.size()) {
-      // Branch 3
-      System.out.println("3.");
+      // Branch 2
+      RuwaidInstrumentation.canAssignStaticMethodResultBranches[2] = 1;
       return false;
     } else {
-      // Branch 4
-      System.out.print("4, ");
+      // Branch 3
+      RuwaidInstrumentation.canAssignStaticMethodResultBranches[3] = 1;
     }
     Map<Equivalence.Wrapper<TypeVariable>, TypeMirror> typeVariables = new LinkedHashMap<>();
     for (int i = 0; i < typeParameters.size(); i++) {
-      // Branch 5
-      System.out.print("5, ");
+      // Branch 4
+      RuwaidInstrumentation.canAssignStaticMethodResultBranches[4] = 1;
       TypeVariable v = MoreTypes.asTypeVariable(typeParameters.get(i).asType());
       typeVariables.put(MoreTypes.equivalence().wrap(v), targetTypeArguments.get(i));
     }
-    // Branch 6
-    System.out.print("6, ");
+    // Branch 5
+    RuwaidInstrumentation.canAssignStaticMethodResultBranches[5] = 1;
     TypeMirror formalParameterType = method.getParameters().get(0).asType();
     SubstitutionVisitor substitutionVisitor = new SubstitutionVisitor(typeVariables, typeUtils);
     TypeMirror substitutedParameterType = substitutionVisitor.visit(formalParameterType, null);
     if (substitutedParameterType.getKind().equals(TypeKind.WILDCARD)) {
-      // Branch 7
-      System.out.print("7, ");
+      // Branch 6
+      RuwaidInstrumentation.canAssignStaticMethodResultBranches[6] = 1;
       // If the target type is Optional<? extends Foo> then <T> T Optional.of(T) will give us
       // ? extends Foo here, and typeUtils.isAssignable will return false. But we can in fact
       // give a Foo as an argument, so we just replace ? extends Foo with Foo.
       WildcardType wildcard = MoreTypes.asWildcard(substitutedParameterType);
       if (wildcard.getExtendsBound() != null) {
-        // Branch 8
-        System.out.println("8.");
+        // Branch 7
+        RuwaidInstrumentation.canAssignStaticMethodResultBranches[7] = 1;
         substitutedParameterType = wildcard.getExtendsBound();
       }else {
-        // Branch 9
-        System.out.println("9.");
+        // Branch 8
+        RuwaidInstrumentation.canAssignStaticMethodResultBranches[8] = 1;
       }
     }else {
-      // Branch 10
-      System.out.println("10.");
+      // Branch 9
+      RuwaidInstrumentation.canAssignStaticMethodResultBranches[9] = 1;
     }
     return typeUtils.isAssignable(actualParameterType, substitutedParameterType);
   }

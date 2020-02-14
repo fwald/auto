@@ -29,6 +29,7 @@ import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import org.junit.BeforeClass;
+import org.junit.AfterClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,6 +48,13 @@ public class TypeVariablesTest {
   public static void setUpClass() {
     elementUtils = compilationRule.getElements();
     typeUtils = compilationRule.getTypes();
+    for (int i = 0; i < RuwaidInstrumentation.canAssignStaticMethodResultBranches.length; i++) {
+      RuwaidInstrumentation.canAssignStaticMethodResultBranches[i] = 0;
+    }
+  }
+
+  @AfterClass public static void reportBranches(){
+    System.out.println("canAssignStaticMethodResult: " + RuwaidInstrumentation.arraySum(RuwaidInstrumentation.canAssignStaticMethodResultBranches) + "/" + RuwaidInstrumentation.canAssignStaticMethodResultBranches.length);
   }
 
   abstract static class Source1 {
