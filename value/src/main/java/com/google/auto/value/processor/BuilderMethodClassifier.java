@@ -352,26 +352,25 @@ class BuilderMethodClassifier {
     String propertyName = null;
     ExecutableElement valueGetter = propertyNameToGetter.get(methodName);
     Multimap<String, PropertySetter> propertyNameToSetters = null;
-    System.out.print("classifyMethodOneArg - Branches taken:");
     if (valueGetter != null) {
-      //Branch 1
-      System.out.print("1, ");
+      //Branch 0
+      RuwaidInstrument.classifyMethodOneArgBranches[0] = 1;
 
       propertyNameToSetters = propertyNameToUnprefixedSetters;
       propertyName = methodName;
     } else {
-      //Branch 2
-      System.out.print("2, ");
+      //Branch 1
+      RuwaidInstrument.classifyMethodOneArgBranches[1] = 1;
       if (valueGetter == null && methodName.startsWith("set") && methodName.length() > 3) {
-        //Branch 3
-        System.out.print("3, ");
+        //Branch 2
+        RuwaidInstrument.classifyMethodOneArgBranches[2] = 1;
 
         propertyNameToSetters = propertyNameToPrefixedSetters;
         propertyName = PropertyNames.decapitalizeLikeJavaBeans(methodName.substring(3));
         valueGetter = propertyNameToGetter.get(propertyName);
         if (valueGetter == null) {
-          //Branch 4
-          System.out.print("4, ");
+          //Branch 3
+          RuwaidInstrument.classifyMethodOneArgBranches[3] = 1;
 
           // If our property is defined by a getter called getOAuth() then it is called "OAuth"
           // because of Introspector.decapitalize. Therefore we want Introspector.decapitalize to
@@ -382,18 +381,18 @@ class BuilderMethodClassifier {
           propertyName = PropertyNames.decapitalizeNormally(methodName.substring(3));
           valueGetter = propertyNameToGetter.get(propertyName);
         } else {
-          //Branch 5
-          System.out.print("5, ");
+          //Branch 4
+          RuwaidInstrument.classifyMethodOneArgBranches[4] = 1;
         }
       } else {
-        //Branch 6
-        System.out.print("6, ");
+        //Branch 5
+        RuwaidInstrument.classifyMethodOneArgBranches[5] = 1;
       }
     }
     
     if (valueGetter == null || propertyNameToSetters == null) {
-      //Branch 7
-      System.out.println("7.");
+      //Branch 6
+      RuwaidInstrument.classifyMethodOneArgBranches[6] = 1;
 
       // The second disjunct isn't needed but convinces control-flow checkers that
       // propertyNameToSetters can't be null when we call put on it below.
@@ -402,35 +401,35 @@ class BuilderMethodClassifier {
       checkForFailedJavaBean(method);
       return;
     } else {
-      //Branch 8
-      System.out.print("8, ");
+      //Branch 7
+      RuwaidInstrument.classifyMethodOneArgBranches[7] = 1;
     }
 
     Optional<Function<String, String>> function = getSetterFunction(valueGetter, method);
     if (function.isPresent()) {
-      //Branch 9
-      System.out.print("9, ");
+      //Branch 8
+      RuwaidInstrument.classifyMethodOneArgBranches[8] = 1;
 
       DeclaredType builderTypeMirror = MoreTypes.asDeclared(builderType.asType());
       ExecutableType methodMirror =
           MoreTypes.asExecutable(typeUtils.asMemberOf(builderTypeMirror, method));
       if (TYPE_EQUIVALENCE.equivalent(methodMirror.getReturnType(), builderType.asType())) {
-        //Branch 10
-        System.out.println("10.");
+        //Branch 9
+        RuwaidInstrument.classifyMethodOneArgBranches[9] = 1;
 
         TypeMirror parameterType = Iterables.getOnlyElement(methodMirror.getParameterTypes());
         propertyNameToSetters.put(
             propertyName, new PropertySetter(method, parameterType, function.get()));
       } else {
-        //Branch 11
-        System.out.println("11.");
+        //Branch 10
+        RuwaidInstrument.classifyMethodOneArgBranches[10] = 1;
 
         errorReporter.reportError(
             "Setter methods must return " + builderType + typeParamsString(), method);
       }
     } else {
-      //Branch 12
-      System.out.println("12.");
+      //Branch 11
+      RuwaidInstrument.classifyMethodOneArgBranches[11] = 1;
     }
   }
 
