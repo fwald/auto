@@ -14,7 +14,7 @@ public class RuwaidInstrument extends RunListener {
   }
 
   public void testRunFinished(Result result) throws Exception {
-      System.out.println("RuwaidInstrument - canAssignStatichMethodResult: " + arraySum(canAssignStaticMethodResultBranches) + "/" + canAssignStaticMethodResultBranches.length);
+      System.out.println("RuwaidInstrument - canAssignStaticMethodResult: " + arraySum(canAssignStaticMethodResultBranches) + "/" + canAssignStaticMethodResultBranches.length);
       System.out.println("RuwaidInstrument - classifyMethodOneArg: " + arraySum(classifyMethodOneArgBranches) + "/" + classifyMethodOneArgBranches.length);
   }
 
