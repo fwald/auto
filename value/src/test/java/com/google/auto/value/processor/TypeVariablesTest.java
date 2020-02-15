@@ -153,7 +153,6 @@ public class TypeVariablesTest {
 
   @Test
   public void canAssignStaticMethodResult() {
-    System.out.println("RuwaidInstrument START");
     TypeElement immutableMap = elementUtils.getTypeElement(ImmutableMap.class.getCanonicalName());
     TypeElement list = elementUtils.getTypeElement(List.class.getCanonicalName());
     TypeElement string = elementUtils.getTypeElement(String.class.getCanonicalName());
