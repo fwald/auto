@@ -23,11 +23,15 @@ import com.google.testing.compile.CompilationRule;
 import java.util.List;
 import java.util.Map;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -149,6 +153,7 @@ public class TypeVariablesTest {
 
   @Test
   public void canAssignStaticMethodResult() {
+    System.out.println("RuwaidInstrument START");
     TypeElement immutableMap = elementUtils.getTypeElement(ImmutableMap.class.getCanonicalName());
     TypeElement string = elementUtils.getTypeElement(String.class.getCanonicalName());
     TypeElement integer = elementUtils.getTypeElement(Integer.class.getCanonicalName());
@@ -173,6 +178,14 @@ public class TypeVariablesTest {
         TypeVariables.canAssignStaticMethodResult(
             copyOf, immutableMapStringNumber, immutableMapStringInteger, typeUtils))
         .isFalse();
+    // New tests
+    // Cover branch 0:
+    TypeMirror declared = typeUtils.getPrimitiveType(TypeKind.INT);
+    assertThat(declared.getKind().equals(TypeKind.DECLARED)).isFalse();
+    expect.that(
+            TypeVariables.canAssignStaticMethodResult(
+                    copyOf, immutableMapStringNumber, declared, typeUtils))
+            .isFalse();
   }
 
   private static ExecutableElement methodNamed(List<ExecutableElement> methods, String name) {
