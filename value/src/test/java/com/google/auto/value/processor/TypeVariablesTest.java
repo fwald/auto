@@ -180,11 +180,11 @@ public class TypeVariablesTest {
         .isFalse();
     // New tests
     // Cover branch 0:
-    TypeMirror declared = typeUtils.getPrimitiveType(TypeKind.INT);
-    assertThat(declared.getKind().equals(TypeKind.DECLARED)).isFalse();
+    TypeMirror primitive = typeUtils.getPrimitiveType(TypeKind.INT);
+    assertThat(primitive.getKind().equals(TypeKind.DECLARED)).isFalse();
     expect.that(
             TypeVariables.canAssignStaticMethodResult(
-                    copyOf, immutableMapStringNumber, declared, typeUtils))
+                    copyOf, immutableMapStringNumber, primitive, typeUtils))
             .isFalse();
   }
 
