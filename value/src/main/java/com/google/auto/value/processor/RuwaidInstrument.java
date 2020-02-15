@@ -14,8 +14,31 @@ public class RuwaidInstrument extends RunListener {
   }
 
   public void testRunFinished(Result result) throws Exception {
-      System.out.println("RuwaidInstrument - canAssignStaticMethodResult: " + arraySum(canAssignStaticMethodResultBranches) + "/" + canAssignStaticMethodResultBranches.length);
-      System.out.println("RuwaidInstrument - classifyMethodOneArg: " + arraySum(classifyMethodOneArgBranches) + "/" + classifyMethodOneArgBranches.length);
+      int sum = arraySum(canAssignStaticMethodResultBranches);
+      System.out.print("RuwaidInstrument - canAssignStaticMethodResult: " + sum + "/" + canAssignStaticMethodResultBranches.length);
+      if(sum != canAssignStaticMethodResultBranches.length) {
+          System.out.println(" - Missing Branches: " + printMissing(canAssignStaticMethodResultBranches));
+      } else {
+          System.out.println();
+      }
+
+      sum = arraySum(classifyMethodOneArgBranches);
+      System.out.print("RuwaidInstrument - classifyMethodOneArg: " + sum + "/" + classifyMethodOneArgBranches.length);
+      if(sum != classifyMethodOneArgBranches.length) {
+          System.out.println(" - Missing Branches: " + printMissing(classifyMethodOneArgBranches));
+      } else {
+          System.out.println();
+      }
+  }
+
+  public String printMissing(int[] array) {
+      StringBuilder ret = new StringBuilder();
+      for (int i = 0; i < array.length; i++) {
+          if(array[i] == 0) {
+              ret.append(i).append(",");
+          }
+      }
+      return ret.toString();
   }
 
   public static int arraySum(int[] array) {
