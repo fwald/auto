@@ -155,6 +155,7 @@ public class TypeVariablesTest {
   public void canAssignStaticMethodResult() {
     System.out.println("RuwaidInstrument START");
     TypeElement immutableMap = elementUtils.getTypeElement(ImmutableMap.class.getCanonicalName());
+    TypeElement list = elementUtils.getTypeElement(List.class.getCanonicalName());
     TypeElement string = elementUtils.getTypeElement(String.class.getCanonicalName());
     TypeElement integer = elementUtils.getTypeElement(Integer.class.getCanonicalName());
     TypeElement number = elementUtils.getTypeElement(Number.class.getCanonicalName());
@@ -185,6 +186,13 @@ public class TypeVariablesTest {
     expect.that(
             TypeVariables.canAssignStaticMethodResult(
                     copyOf, immutableMapStringNumber, primitive, typeUtils))
+            .isFalse();
+    // Cover branch 2:
+    TypeMirror argDiff =
+            typeUtils.getDeclaredType(list, string.asType());
+    expect.that(
+            TypeVariables.canAssignStaticMethodResult(
+                    copyOf, immutableMapStringNumber, argDiff, typeUtils))
             .isFalse();
   }
 
