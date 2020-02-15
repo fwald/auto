@@ -182,60 +182,99 @@ class BuilderMethodClassifier {
       Iterable<ExecutableElement> methods, boolean autoValueHasToBuilder) {
     int startErrorCount = errorReporter.errorCount();
     for (ExecutableElement method : methods) {
+      // Branch 0
+      MaelInstrumentation.branchCoverage[0] = true;
+
       classifyMethod(method);
     }
     if (errorReporter.errorCount() > startErrorCount) {
+      // Branch 1
+      MaelInstrumentation.branchCoverage[1] = true;  
+
       return false;
     }
-    Multimap<String, PropertySetter> propertyNameToSetter;
-    if (propertyNameToPrefixedSetters.isEmpty()) {
-      propertyNameToSetter = propertyNameToUnprefixedSetters;
-      this.settersPrefixed = false;
-    } else if (propertyNameToUnprefixedSetters.isEmpty()) {
-      propertyNameToSetter = propertyNameToPrefixedSetters;
-      this.settersPrefixed = true;
-    } else {
-      errorReporter.reportError(
-          "If any setter methods use the setFoo convention then all must",
-          propertyNameToUnprefixedSetters.values().iterator().next().getSetter());
-      return false;
-    }
-    getterToPropertyName.forEach(
-        (getter, property) -> {
-          TypeMirror propertyType = getterToPropertyType.get(getter);
-          boolean hasSetter = propertyNameToSetter.containsKey(property);
-          PropertyBuilder propertyBuilder = propertyNameToPropertyBuilder.get(property);
-          boolean hasBuilder = propertyBuilder != null;
-          if (hasBuilder) {
-            // If property bar of type Bar has a barBuilder() that returns BarBuilder, then it must
-            // be possible to make a BarBuilder from a Bar if either (1) the @AutoValue class has a
-            // toBuilder() or (2) there is also a setBar(Bar). Making BarBuilder from Bar is
-            // possible if Bar either has a toBuilder() method or is a Guava immutable collection
-            // (in which case we can use addAll or putAll).
-            boolean canMakeBarBuilder =
-                (propertyBuilder.getBuiltToBuilder() != null
-                    || propertyBuilder.getCopyAll() != null);
-            boolean needToMakeBarBuilder = (autoValueHasToBuilder || hasSetter);
-            if (needToMakeBarBuilder && !canMakeBarBuilder) {
+    else{
+      // Branch 2
+      MaelInstrumentation.branchCoverage[2] = true;
+
+      Multimap<String, PropertySetter> propertyNameToSetter;
+      if (propertyNameToPrefixedSetters.isEmpty()) {
+        // Branch 3
+        MaelInstrumentation.branchCoverage[3] = true;
+
+        propertyNameToSetter = propertyNameToUnprefixedSetters;
+        this.settersPrefixed = false;
+      } else if (propertyNameToUnprefixedSetters.isEmpty()) {
+        // Branch 4
+        MaelInstrumentation.branchCoverage[4] = true;
+
+        propertyNameToSetter = propertyNameToPrefixedSetters;
+        this.settersPrefixed = true;
+      } else {
+        // Branch 5
+        MaelInstrumentation.branchCoverage[5] = true;
+
+        errorReporter.reportError(
+            "If any setter methods use the setFoo convention then all must",
+            propertyNameToUnprefixedSetters.values().iterator().next().getSetter());
+        return false;
+      }
+      getterToPropertyName.forEach(
+          (getter, property) -> {
+            TypeMirror propertyType = getterToPropertyType.get(getter);
+            boolean hasSetter = propertyNameToSetter.containsKey(property);
+            PropertyBuilder propertyBuilder = propertyNameToPropertyBuilder.get(property);
+            boolean hasBuilder = propertyBuilder != null;
+            if (hasBuilder) {
+              // If property bar of type Bar has a barBuilder() that returns BarBuilder, then it must
+              // be possible to make a BarBuilder from a Bar if either (1) the @AutoValue class has a
+              // toBuilder() or (2) there is also a setBar(Bar). Making BarBuilder from Bar is
+              // possible if Bar either has a toBuilder() method or is a Guava immutable collection
+              // (in which case we can use addAll or putAll).
+
+              // Branch 6
+              MaelInstrumentation.branchCoverage[6] = true;
+
+
+              boolean canMakeBarBuilder =
+                  (propertyBuilder.getBuiltToBuilder() != null
+                      || propertyBuilder.getCopyAll() != null);
+              boolean needToMakeBarBuilder = (autoValueHasToBuilder || hasSetter);
+              if (needToMakeBarBuilder && !canMakeBarBuilder) {
+                // Branch 7
+                MaelInstrumentation.branchCoverage[7] = true;
+
+                String error =
+                    String.format(
+                        "Property builder method returns %1$s but there is no way to make that type"
+                            + " from %2$s: %2$s does not have a non-static toBuilder() method that"
+                            + " returns %1$s",
+                        propertyBuilder.getBuilderTypeMirror(), propertyType);
+                errorReporter.reportError(error, propertyBuilder.getPropertyBuilderMethod());
+              }
+              else { // added branch
+                // Branch 10
+                MaelInstrumentation.branchCoverage[10] = true;
+              }
+            } else if (!hasSetter) {
+              // We have neither barBuilder() nor setBar(Bar), so we should complain.
+
+              // Branch 8
+              MaelInstrumentation.branchCoverage[8] = true;
+              String setterName = settersPrefixed ? prefixWithSet(property) : property;
               String error =
                   String.format(
-                      "Property builder method returns %1$s but there is no way to make that type"
-                          + " from %2$s: %2$s does not have a non-static toBuilder() method that"
-                          + " returns %1$s",
-                      propertyBuilder.getBuilderTypeMirror(), propertyType);
-              errorReporter.reportError(error, propertyBuilder.getPropertyBuilderMethod());
+                      "Expected a method with this signature: %s%s %s(%s), or a %sBuilder() method",
+                      builderType, typeParamsString(), setterName, propertyType, property);
+              errorReporter.reportError(error, builderType);
+            } else{ // added branch
+              // Branch 9
+              MaelInstrumentation.branchCoverage[9] = true;
             }
-          } else if (!hasSetter) {
-            // We have neither barBuilder() nor setBar(Bar), so we should complain.
-            String setterName = settersPrefixed ? prefixWithSet(property) : property;
-            String error =
-                String.format(
-                    "Expected a method with this signature: %s%s %s(%s), or a %sBuilder() method",
-                    builderType, typeParamsString(), setterName, propertyType, property);
-            errorReporter.reportError(error, builderType);
-          }
-        });
-    return errorReporter.errorCount() == startErrorCount;
+
+          });
+      return errorReporter.errorCount() == startErrorCount;
+    }
   }
 
   /** Classifies a method and update the state of this object based on what is found. */
