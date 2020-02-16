@@ -132,6 +132,17 @@ public class OverridesTest {
     explicitOverrides = new Overrides.ExplicitOverrides(typeUtils);
   }
 
+  static class TypesForPrivateOverriding{
+    static class Parent {
+      public void m() {}
+      private void hidden(){}
+    }
+
+    static class ChildOverridesHidden extends Parent{
+      private void hidden() {}
+    }
+  }
+
   static class TypesForInheritance {
     interface One {
       void m();
@@ -262,6 +273,18 @@ public class OverridesTest {
     static class RawChildOfNonRaw extends NonRawParent {
       @Override void frob(List x) {}
     }
+  }
+
+  /**
+  * Checks that Overrides.ExplicitOverrides::overrides returns the same thing (false) as
+   * Overrides.NativeOverrides::overrides for one subclass trying to override (without a tag) a private method of
+   * the superclass. Overrides.ExplicitOverrides::overrides is a reimplementation of a method in javac which
+   * is wrapped by Overrides.NativeOverrides::overrides. This comparison is done using the helper function
+   * checkOverridesInContainedClasses.
+  * */
+  @Test
+  public void overridesPrivate() {
+    checkOverridesInContainedClasses(TypesForPrivateOverriding.class);
   }
 
   @Test

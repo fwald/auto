@@ -72,4 +72,23 @@ public class JavaScannerTest {
     }
     assertThat(tokensBuilder.build()).containsExactlyElementsIn(TOKENS).inOrder();
   }
+
+  /**
+  * Tests that tokenEnd in scanner returns the length of the string l when start s >= l.
+  */
+  @Test
+  public void testScannerTokenEndStartOverflow(){
+    JavaScanner tokenizer = new JavaScanner("Google\n");
+    assertThat(tokenizer.tokenEnd(7)).isEqualTo(7);
+    assertThat(tokenizer.tokenEnd(8)).isEqualTo(7);
+  }
+
+  /**
+   * Tests that tokenEnd in scanner works with tokens that start with / but are not comments.
+   */
+  @Test
+  public void testScannerTokenEndHalfComment(){
+    JavaScanner tokenizer = new JavaScanner("1/2\n");
+    assertThat(tokenizer.tokenEnd(1)).isEqualTo(2);
+  }
 }
