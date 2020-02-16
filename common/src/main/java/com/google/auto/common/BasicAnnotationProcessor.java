@@ -15,6 +15,24 @@
  */
 package com.google.auto.common;
 
+import com.google.common.base.Ascii;
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicates;
+import com.google.common.collect.*;
+
+import javax.annotation.processing.*;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.ErrorType;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.SimpleElementVisitor8;
+import java.lang.annotation.Annotation;
+import java.util.*;
+import java.util.Map.Entry;
+
 import static com.google.auto.common.MoreElements.isAnnotationPresent;
 import static com.google.auto.common.SuperficialValidation.validateElement;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -23,37 +41,6 @@ import static com.google.common.collect.Iterables.transform;
 import static com.google.common.collect.Multimaps.filterKeys;
 import static javax.lang.model.element.ElementKind.PACKAGE;
 import static javax.tools.Diagnostic.Kind.ERROR;
-
-import com.google.common.base.Ascii;
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.base.Predicates;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSetMultimap;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.SetMultimap;
-import com.google.common.collect.Sets;
-import java.lang.annotation.Annotation;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.Messager;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.Processor;
-import javax.annotation.processing.RoundEnvironment;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.ErrorType;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.SimpleElementVisitor8;
 
 /**
  * An abstract {@link Processor} implementation that defers processing of {@link Element}s to later
@@ -303,16 +290,24 @@ public abstract class BasicAnnotationProcessor extends AbstractProcessor {
         deferredElementsByAnnotationBuilder = ImmutableSetMultimap.builder();
     for (Entry<String, Optional<? extends Element>> deferredTypeElementEntry :
         deferredElements.entrySet()) {
+      // Branch 0
+      iZafiroInstrument.validElementsBranches[0] = 1;
       Optional<? extends Element> deferredElement = deferredTypeElementEntry.getValue();
       if (deferredElement.isPresent()) {
+        // Branch 2
+        iZafiroInstrument.validElementsBranches[2] = 1;
         findAnnotatedElements(
             deferredElement.get(),
             getSupportedAnnotationClasses(),
             deferredElementsByAnnotationBuilder);
       } else {
+        // Branch 3
+        iZafiroInstrument.validElementsBranches[3] = 1;
         deferredElementNames.add(ElementName.forTypeName(deferredTypeElementEntry.getKey()));
       }
     }
+    // Branch 1
+    iZafiroInstrument.validElementsBranches[1] = 1;
 
     ImmutableSetMultimap<Class<? extends Annotation>, Element> deferredElementsByAnnotation =
         deferredElementsByAnnotationBuilder.build();
@@ -324,6 +319,8 @@ public abstract class BasicAnnotationProcessor extends AbstractProcessor {
 
     // Look at the elements we've found and the new elements from this round and validate them.
     for (Class<? extends Annotation> annotationClass : getSupportedAnnotationClasses()) {
+      // Branch 4
+      iZafiroInstrument.validElementsBranches[4] = 1;
       // This should just call roundEnv.getElementsAnnotatedWith(Class) directly, but there is a bug
       // in some versions of eclipse that cause that method to crash.
       TypeElement annotationType = elements.getTypeElement(annotationClass.getCanonicalName());
@@ -331,9 +328,15 @@ public abstract class BasicAnnotationProcessor extends AbstractProcessor {
           (annotationType == null)
               ? ImmutableSet.<Element>of()
               : roundEnv.getElementsAnnotatedWith(annotationType);
+      // Branch 14
+      iZafiroInstrument.validElementsBranches[14] = 1;
       for (Element annotatedElement :
           Sets.union(elementsAnnotatedWith, deferredElementsByAnnotation.get(annotationClass))) {
+        // Branch 6
+        iZafiroInstrument.validElementsBranches[6] = 1;
         if (annotatedElement.getKind().equals(PACKAGE)) {
+          // Branch 8
+          iZafiroInstrument.validElementsBranches[8] = 1;
           PackageElement annotatedPackageElement = (PackageElement) annotatedElement;
           ElementName annotatedPackageName =
               ElementName.forPackageName(annotatedPackageElement.getQualifiedName().toString());
@@ -342,12 +345,18 @@ public abstract class BasicAnnotationProcessor extends AbstractProcessor {
                   || (!deferredElementNames.contains(annotatedPackageName)
                       && validateElement(annotatedPackageElement));
           if (validPackage) {
+            // Branch 10
+            iZafiroInstrument.validElementsBranches[10] = 1;
             validElements.put(annotationClass, annotatedPackageElement);
             validElementNames.add(annotatedPackageName);
           } else {
+            // Branch 11
+            iZafiroInstrument.validElementsBranches[11] = 1;
             deferredElementNames.add(annotatedPackageName);
           }
         } else {
+          // Branch 9
+          iZafiroInstrument.validElementsBranches[9] = 1;
           TypeElement enclosingType = getEnclosingType(annotatedElement);
           ElementName enclosingTypeName =
               ElementName.forTypeName(enclosingType.getQualifiedName().toString());
@@ -356,15 +365,22 @@ public abstract class BasicAnnotationProcessor extends AbstractProcessor {
                   || (!deferredElementNames.contains(enclosingTypeName)
                       && validateElement(enclosingType));
           if (validEnclosingType) {
+            // Branch 12
+            iZafiroInstrument.validElementsBranches[12] = 1;
             validElements.put(annotationClass, annotatedElement);
             validElementNames.add(enclosingTypeName);
           } else {
+            // Branch 13
+            iZafiroInstrument.validElementsBranches[13] = 1;
             deferredElementNames.add(enclosingTypeName);
           }
         }
       }
+      // Branch 7
+      iZafiroInstrument.validElementsBranches[7] = 1;
     }
-
+    // Branch 5
+    iZafiroInstrument.validElementsBranches[5] = 1;
     return validElements.build();
   }
 
