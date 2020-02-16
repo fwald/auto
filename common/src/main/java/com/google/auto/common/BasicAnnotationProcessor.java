@@ -229,20 +229,40 @@ public abstract class BasicAnnotationProcessor extends AbstractProcessor {
       Map<String, ? extends Optional<? extends Element>> missingElements,
       Collection<ElementName> missingElementNames) {
     if (!missingElementNames.isEmpty()) {
+      // Branch 0
+      iZafiroInstrument.reportMissingElementsBranches[0] = 1;
       ImmutableMap.Builder<String, Optional<? extends Element>> allMissingElements =
           ImmutableMap.builder();
       allMissingElements.putAll(missingElements);
       for (ElementName missingElement : missingElementNames) {
+        // Branch 2
+        iZafiroInstrument.reportMissingElementsBranches[2] = 1;
         if (!missingElements.containsKey(missingElement.name())) {
+          // Branch 4
+          iZafiroInstrument.reportMissingElementsBranches[4] = 1;
           allMissingElements.put(missingElement.name(), missingElement.getElement(elements));
         }
+        else {
+          // Branch 5
+          iZafiroInstrument.reportMissingElementsBranches[5] = 1;
+        }
       }
+      // Branch 3
+      iZafiroInstrument.reportMissingElementsBranches[3] = 1;
       missingElements = allMissingElements.build();
+    }
+    else {
+      // Branch 1
+      iZafiroInstrument.reportMissingElementsBranches[1] = 1;
     }
     for (Entry<String, ? extends Optional<? extends Element>> missingElementEntry :
         missingElements.entrySet()) {
+      // Branch 6
+      iZafiroInstrument.reportMissingElementsBranches[6] = 1;
       Optional<? extends Element> missingElement = missingElementEntry.getValue();
       if (missingElement.isPresent()) {
+        // Branch 8
+        iZafiroInstrument.reportMissingElementsBranches[8] = 1;
         processingEnv
             .getMessager()
             .printMessage(
@@ -251,11 +271,15 @@ public abstract class BasicAnnotationProcessor extends AbstractProcessor {
                     "this " + Ascii.toLowerCase(missingElement.get().getKind().name())),
                 missingElement.get());
       } else {
+        // Branch 9
+        iZafiroInstrument.reportMissingElementsBranches[9] = 1;
         processingEnv
             .getMessager()
             .printMessage(ERROR, processingErrorMessage(missingElementEntry.getKey()));
       }
     }
+    // Branch 7
+    iZafiroInstrument.reportMissingElementsBranches[7] = 1;
   }
 
   private String processingErrorMessage(String target) {

@@ -19,6 +19,14 @@ release.properties
 *.iml
 classes
 
+.idea/
+common/.idea
+common/.idea/
+target
+target/
+common/target
+common/target/
+
 obj
 
 .DS_Store
