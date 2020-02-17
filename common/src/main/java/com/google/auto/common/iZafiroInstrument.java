@@ -12,15 +12,19 @@ public class iZafiroInstrument extends RunListener {
     }
 
     public void testRunFinished(Result result) throws Exception {
-        System.out.println("iZafiroInstrument - reportMissingElements: " + arraySum(reportMissingElementsBranches) + "/" + reportMissingElementsBranches.length);
-        System.out.println("iZafiroInstrument - validElementsBranches: " + arraySum(validElementsBranches) + "/" + validElementsBranches.length);
+        int sum = 0;
+        for(int i = 0; i<reportMissingElementsBranches.length; i++) {
+            System.out.println("iZafiroInstrument - reportMissingElements: branch "+ i + " status " + reportMissingElementsBranches[i]);
+            sum += reportMissingElementsBranches[i];
+        }
+        System.out.println("iZafiroInstrument - reportMissingElements: " + sum + "/" + reportMissingElementsBranches.length);
+
+        sum = 0;
+        for(int i = 0; i<validElementsBranches.length; i++) {
+            System.out.println("iZafiroInstrument - validElementsBranches: branch "+ i + " status " + validElementsBranches[i]);
+            sum += validElementsBranches[i];
+        }
+        System.out.println("iZafiroInstrument - validElementsBranches: " + sum + "/" + validElementsBranches.length);
     }
 
-    public static int arraySum(int[] array) {
-        int sum = 0;
-        for(int x : array) {
-            sum += x;
-        }
-        return sum;
-    }
 }

@@ -1,0 +1,28 @@
+iZafiroInstrument - reportMissingElements: branch 0 status 0
+iZafiroInstrument - reportMissingElements: branch 1 status 1
+iZafiroInstrument - reportMissingElements: branch 2 status 0
+iZafiroInstrument - reportMissingElements: branch 3 status 0
+iZafiroInstrument - reportMissingElements: branch 4 status 0
+iZafiroInstrument - reportMissingElements: branch 5 status 0
+iZafiroInstrument - reportMissingElements: branch 6 status 1
+iZafiroInstrument - reportMissingElements: branch 7 status 1
+iZafiroInstrument - reportMissingElements: branch 8 status 1
+iZafiroInstrument - reportMissingElements: branch 9 status 0
+iZafiroInstrument - reportMissingElements: 4/10
+
+iZafiroInstrument - validElementsBranches: branch 0 status 1
+iZafiroInstrument - validElementsBranches: branch 1 status 1
+iZafiroInstrument - validElementsBranches: branch 2 status 1
+iZafiroInstrument - validElementsBranches: branch 3 status 0
+iZafiroInstrument - validElementsBranches: branch 4 status 1
+iZafiroInstrument - validElementsBranches: branch 5 status 1
+iZafiroInstrument - validElementsBranches: branch 6 status 1
+iZafiroInstrument - validElementsBranches: branch 7 status 1
+iZafiroInstrument - validElementsBranches: branch 8 status 1
+iZafiroInstrument - validElementsBranches: branch 9 status 1
+iZafiroInstrument - validElementsBranches: branch 10 status 1
+iZafiroInstrument - validElementsBranches: branch 11 status 1
+iZafiroInstrument - validElementsBranches: branch 12 status 1
+iZafiroInstrument - validElementsBranches: branch 13 status 1
+iZafiroInstrument - validElementsBranches: branch 14 status 1
+iZafiroInstrument - validElementsBranches: 14/15
