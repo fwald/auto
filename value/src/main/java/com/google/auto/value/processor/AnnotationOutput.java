@@ -20,6 +20,7 @@ import com.google.common.collect.Iterables;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.HashMap;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -242,30 +243,28 @@ final class AnnotationOutput {
   }
 
   private static void appendEscaped(StringBuilder sb, char c) {
-    switch (c) {
-      case '\\':
-      case '"':
-      case '\'':
-        sb.append('\\').append(c);
-        break;
-      case '\n':
-        sb.append("\\n");
-        break;
-      case '\r':
-        sb.append("\\r");
-        break;
-      case '\t':
-        sb.append("\\t");
-        break;
-      default:
-        if (c < 0x20) {
-          sb.append(String.format("\\%03o", (int) c));
-        } else if (c < 0x7f || Character.isLetter(c)) {
-          sb.append(c);
-        } else {
-          sb.append(String.format("\\u%04x", (int) c));
-        }
-        break;
+    boolean enterFirstIf = (c == '\\' || c == '"' || c == '\'');
+    boolean enterSecondIf = (c < 0x7f || Character.isLetter(c));
+    HashMap<Character, String> appendant = new HashMap<Character, String>();
+    appendant.put('\n', "\\n");
+    appendant.put('\r', "\\r");
+    appendant.put('\t', "\\t");
+    if (enterFirstIf) {
+      sb.append('\\').append(c);
+      return;
     }
+    else if (appendant.containsKey(c)) {
+      sb.append(appendant.get(c));
+      return;
+    }
+    else if (c < 0x20) {
+      sb.append(String.format("\\%03o", (int) c));
+      return;
+    }
+    else if (enterSecondIf) {
+      sb.append(c);
+      return;
+    }
+    sb.append(String.format("\\u%04x", (int) c));
   }
 }

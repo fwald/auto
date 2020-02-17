@@ -109,12 +109,25 @@
     <pluginManagement>
       <plugins>
         <plugin>
+          <groupId>org.openclover</groupId>
+          <artifactId>clover-maven-plugin</artifactId>
+          <version>4.4.1</version>
+          <configuration>
+            <excludes>
+              <exclude>**/src-instrumented/*.java</exclude>
+              <exclude>**/src-test-instrumented/*.java</exclude>
+              <exclude>**/value/*.java</exclude>
+              <exclude>**/clover/**</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.7.0</version>
           <configuration>
-            <source>${java.version}</source>
-            <target>${java.version}</target>
+            <source>1.8</source>
+            <target>1.8</target>
             <compilerArgument>-Xlint:all</compilerArgument>
             <showWarnings>true</showWarnings>
             <showDeprecation>true</showDeprecation>
