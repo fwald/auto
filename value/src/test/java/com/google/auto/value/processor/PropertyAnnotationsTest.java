@@ -525,6 +525,47 @@ public class PropertyAnnotationsTest {
             .compilesWithoutError();
   }
 
+  // iZafiro's testIllegalEscapeCharacterAnnotation
+  @Test
+  public void testIllegalEscapeCharacterAnnotation() {
+    JavaFileObject javaFileObject =
+            new InputFileBuilder().setImports(getImports(PropertyAnnotationsTest.class)).addAnnotations(ImmutableList.of(
+                    TEST_ANNOTATION + "(testBoolean = true, testString = \" \\ \", testChar = 'a')")).build();
+
+    assertAbout(javaSource())
+            .that(javaFileObject)
+            .processedWith(new AutoValueProcessor())
+            .failsToCompile()
+            .withErrorContaining("illegal escape character");
+
+  }
+
+  // iZafiro's testBackslashCharactersAnnotation
+  @Test
+  public void testBackslashCharactersAnnotation() {
+    JavaFileObject javaFileObject =
+            new InputFileBuilder().setImports(getImports(PropertyAnnotationsTest.class)).addAnnotations(ImmutableList.of(
+                    TEST_ANNOTATION + "(testBoolean = true, testString = \" Lorem\t\\\"ipsum\\\"\tdolor\tsit\tamet...\\n\\r \\\\ " + (char)0x19 + (char)0x80 + (char)0x14 + "\", testChar = 'a')")).build();
+
+    assertAbout(javaSource())
+            .that(javaFileObject)
+            .processedWith(new AutoValueProcessor())
+            .compilesWithoutError();
+  }
+
+  // iZafiro's testTypecastCharactersAnnotation
+  @Test
+  public void testTypecastCharactersAnnotation() {
+    JavaFileObject javaFileObject =
+            new InputFileBuilder().setImports(getImports(PropertyAnnotationsTest.class)).addAnnotations(ImmutableList.of(
+                    TEST_ANNOTATION + "(testBoolean = true, testString = \"" + (char)0x19 + (char)0x80 + (char)0x14 + "\", testChar = 'a')")).build();
+
+    assertAbout(javaSource())
+            .that(javaFileObject)
+            .processedWith(new AutoValueProcessor())
+            .compilesWithoutError();
+  }
+
   /**
    * Tests that when CopyAnnotations is present on a method, all non-inherited annotations (except
    * those appearing in CopyAnnotations.exclude) are copied to the method implementation in the
