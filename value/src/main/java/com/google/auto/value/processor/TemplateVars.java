@@ -174,6 +174,10 @@ abstract class TemplateVars {
     return new InputStreamReader(in, StandardCharsets.UTF_8);
   }
 
+  static Reader readerURL(String resourceName) throws IOException {
+    return readerFromUrl(resourceName);
+  }
+
   private static InputStream inputStreamFromJar(URL resourceUrl)
       throws URISyntaxException, IOException {
     // Jar URLs look like this: jar:file:/path/to/file.jar!/entry/within/jar
