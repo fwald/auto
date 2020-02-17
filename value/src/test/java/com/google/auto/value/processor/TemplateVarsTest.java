@@ -19,6 +19,7 @@ import static com.google.common.base.StandardSystemProperty.JAVA_CLASS_PATH;
 import static com.google.common.base.StandardSystemProperty.PATH_SEPARATOR;
 import static com.google.common.truth.Truth.assertThat;
 import static java.util.logging.Level.WARNING;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import com.google.common.base.Splitter;
@@ -38,6 +39,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
+
+import com.sun.source.tree.AssertTree;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -68,6 +72,22 @@ public class TemplateVarsTest {
     } catch (IOException e) {
       throw new AssertionError(e);
     }
+  }
+
+  @Test
+  public void testReaderFromUrl_IllegalArgumentException() {
+    try{
+      TemplateVars.readerURL("null");
+      fail("No exception thrown");
+    } catch (IllegalArgumentException e) {
+    } catch (IOException e) {
+      fail("Wrong exception thrown");
+    }
+  }
+
+  @Test
+  public void testReaderFromUrl_JarProtocol() throws IOException{
+    Assert.assertNotNull(TemplateVars.readerURL("package-info.java"));
   }
 
   @Test
