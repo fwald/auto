@@ -486,6 +486,45 @@ public class PropertyAnnotationsTest {
                 + "(testAnnotations = @PropertyAnnotationsTest.OtherAnnotation(foo = 999))"));
   }
 
+  // iZafiro's testNaN()
+  @Test
+  public void testNaN() {
+    JavaFileObject javaFileObject =
+            new InputFileBuilder().setImports(getImports(PropertyAnnotationsTest.class)).addAnnotations(ImmutableList.of(
+                    TEST_ANNOTATION + "(testDouble = Double.NaN, testFloat = Float.NaN)")).build();
+
+    assertAbout(javaSource())
+            .that(javaFileObject)
+            .processedWith(new AutoValueProcessor())
+            .compilesWithoutError();
+  }
+
+  // iZafiro's testNegativeInfinities()
+  @Test
+  public void testNegativeInfinities() {
+    JavaFileObject javaFileObject =
+            new InputFileBuilder().setImports(getImports(PropertyAnnotationsTest.class)).addAnnotations(ImmutableList.of(
+                    TEST_ANNOTATION + "(testDouble = Double.NEGATIVE_INFINITY, testFloat = Float.NEGATIVE_INFINITY)")).build();
+
+    assertAbout(javaSource())
+            .that(javaFileObject)
+            .processedWith(new AutoValueProcessor())
+            .compilesWithoutError();
+  }
+
+  // iZafiro's testPositiveInfinities()
+  @Test
+  public void testPositiveInfinities() {
+    JavaFileObject javaFileObject =
+            new InputFileBuilder().setImports(getImports(PropertyAnnotationsTest.class)).addAnnotations(ImmutableList.of(
+                    TEST_ANNOTATION + "(testDouble = Double.POSITIVE_INFINITY, testFloat = Float.POSITIVE_INFINITY)")).build();
+
+    assertAbout(javaSource())
+            .that(javaFileObject)
+            .processedWith(new AutoValueProcessor())
+            .compilesWithoutError();
+  }
+
   /**
    * Tests that when CopyAnnotations is present on a method, all non-inherited annotations (except
    * those appearing in CopyAnnotations.exclude) are copied to the method implementation in the
