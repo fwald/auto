@@ -200,7 +200,11 @@ class PropertyBuilderClassifier {
   // problem.
   Optional<PropertyBuilder> makePropertyBuilder(ExecutableElement method, String property) {
     TypeMirror barBuilderTypeMirror = builderMethodClassifier.builderMethodReturnType(method);
+
     if (barBuilderTypeMirror.getKind() != TypeKind.DECLARED) {
+      // Branch 0
+      MaelInstrumentation.branchCoverage2[0] = true;
+
       errorReporter.reportError(
           "Method looks like a property builder, but its return type is not a class or interface",
           method);
@@ -212,7 +216,11 @@ class PropertyBuilderClassifier {
 
     ExecutableElement barGetter = getterToPropertyName.inverse().get(property);
     TypeMirror barTypeMirror = getterToPropertyType.get(barGetter);
+
     if (barTypeMirror.getKind() != TypeKind.DECLARED) {
+      // Branch 1
+      MaelInstrumentation.branchCoverage2[1] = true;
+
       errorReporter.reportError(
           "Method looks like a property builder, but the type of property "
               + property
@@ -221,6 +229,9 @@ class PropertyBuilderClassifier {
       return Optional.empty();
     }
     if (isNullable(barGetter)) {
+      // Branch 2
+      MaelInstrumentation.branchCoverage2[2] = true;
+
       errorReporter.reportError(
           "Property " + property + " has a property builder so it cannot be @Nullable",
           barGetter);
@@ -231,6 +242,9 @@ class PropertyBuilderClassifier {
     // Condition (1), must have build() method returning Bar.
     ExecutableElement build = barBuilderNoArgMethods.get("build");
     if (build == null || build.getModifiers().contains(Modifier.STATIC)) {
+      // Branch 3
+      MaelInstrumentation.branchCoverage2[3] = true;
+
       errorReporter.reportError(
           "Method looks like a property builder, but it returns "
               + barBuilderTypeElement
@@ -243,6 +257,9 @@ class PropertyBuilderClassifier {
     // And if the type of `bar()` is Bar<String> then `BarBuilder.build()` must return Bar<String>.
     TypeMirror buildType = eclipseHack.methodReturnType(build, barBuilderDeclaredType);
     if (!MoreTypes.equivalence().equivalent(barTypeMirror, buildType)) {
+      // Branch 4
+      MaelInstrumentation.branchCoverage2[4] = true;
+
       errorReporter.reportError(
           "Property builder for "
               + property
@@ -259,6 +276,9 @@ class PropertyBuilderClassifier {
     Optional<ExecutableElement> maybeBuilderMaker =
         builderMaker(barNoArgMethods, barBuilderTypeElement);
     if (!maybeBuilderMaker.isPresent()) {
+      // Branch 5
+      MaelInstrumentation.branchCoverage2[5] = true;
+
       errorReporter.reportError(
           "Method looks like a property builder, but its type "
               + barBuilderTypeElement
@@ -273,10 +293,27 @@ class PropertyBuilderClassifier {
 
     String barBuilderType = TypeEncoder.encodeWithAnnotations(barBuilderTypeMirror);
     String rawBarType = TypeEncoder.encodeRaw(barTypeMirror);
-    String initializer =
-        (builderMaker.getKind() == ElementKind.CONSTRUCTOR)
-            ? "new " + barBuilderType + "()"
-            : rawBarType + "." + builderMaker.getSimpleName() + "()";
+
+    // Rewrite this line for the instrumentation.
+    // String initializer =
+    //     (builderMaker.getKind() == ElementKind.CONSTRUCTOR)
+    //         ? "new " + barBuilderType + "()"
+    //         : rawBarType + "." + builderMaker.getSimpleName() + "()";
+    String initializer = "";
+    if (builderMaker.getKind() == ElementKind.CONSTRUCTOR) {
+      // Branch 6
+      MaelInstrumentation.branchCoverage2[6] = true;
+
+      initializer = "new " + barBuilderType + "()";
+    }
+    else{
+      // Branch 7
+      MaelInstrumentation.branchCoverage2[7] = true;
+
+      initializer = rawBarType + "." + builderMaker.getSimpleName() + "()";
+    }
+    // end rewriting
+
     String builtToBuilder = null;
     String copyAll = null;
     ExecutableElement toBuilder = barNoArgMethods.get("toBuilder");
@@ -285,13 +322,22 @@ class PropertyBuilderClassifier {
         && typeUtils.isAssignable(
             typeUtils.erasure(toBuilder.getReturnType()),
             typeUtils.erasure(barBuilderTypeMirror))) {
+      // Branch 8
+      MaelInstrumentation.branchCoverage2[8] = true;
+
       builtToBuilder = toBuilder.getSimpleName().toString();
     } else {
+      // Branch 9
+      MaelInstrumentation.branchCoverage2[9] = true;
+
       boolean isGuavaBuilder =
           barBuilderTypeMirror.toString().startsWith(COM_GOOGLE_COMMON_COLLECT_IMMUTABLE)
               && barBuilderTypeMirror.toString().contains(".Builder<");
       Optional<ExecutableElement> maybeCopyAll = addAllPutAll(barBuilderTypeElement);
       if (maybeCopyAll.isPresent() && isGuavaBuilder) {
+        // Branch 10
+        MaelInstrumentation.branchCoverage2[10] = true;
+
         copyAll = maybeCopyAll.get().getSimpleName().toString();
       }
     }
@@ -307,9 +353,15 @@ class PropertyBuilderClassifier {
     String beforeInitDefault;
     String initDefault;
     if (hasOf) {
+      // Branch 11
+      MaelInstrumentation.branchCoverage2[11] = true;
+
       beforeInitDefault = "";
       initDefault = rawBarType + ".of()";
     } else {
+      // Branch 12
+      MaelInstrumentation.branchCoverage2[12] = true;
+
       String localBuilder = property + "$builder";
       beforeInitDefault = barBuilderType + " " + localBuilder + " = " + initializer + ";";
       initDefault = localBuilder + ".build()";
