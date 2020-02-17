@@ -353,83 +353,52 @@ class BuilderMethodClassifier {
     ExecutableElement valueGetter = propertyNameToGetter.get(methodName);
     Multimap<String, PropertySetter> propertyNameToSetters = null;
     if (valueGetter != null) {
-      //Branch 0
-      RuwaidInstrument.classifyMethodOneArgBranches[0] = 1;
-
       propertyNameToSetters = propertyNameToUnprefixedSetters;
       propertyName = methodName;
-    } else {
-      //Branch 1
-      RuwaidInstrument.classifyMethodOneArgBranches[1] = 1;
-      if (valueGetter == null && methodName.startsWith("set") && methodName.length() > 3) {
-        //Branch 2
-        RuwaidInstrument.classifyMethodOneArgBranches[2] = 1;
-
-        propertyNameToSetters = propertyNameToPrefixedSetters;
-        propertyName = PropertyNames.decapitalizeLikeJavaBeans(methodName.substring(3));
+    } else if (isSetterMethod(methodName)) {
+      propertyNameToSetters = propertyNameToPrefixedSetters;
+      propertyName = PropertyNames.decapitalizeLikeJavaBeans(methodName.substring(3));
+      valueGetter = propertyNameToGetter.get(propertyName);
+      if (valueGetter == null) {
+        // If our property is defined by a getter called getOAuth() then it is called "OAuth"
+        // because of Introspector.decapitalize. Therefore we want Introspector.decapitalize to
+        // be used for the setter too, so that you can write setOAuth(x). Meanwhile if the property
+        // is defined by a getter called oAuth() then it is called "oAuth", but you would still
+        // expect to be able to set it using setOAuth(x). Hence the second try using a decapitalize
+        // method without the quirky two-leading-capitals rule.
+        propertyName = PropertyNames.decapitalizeNormally(methodName.substring(3));
         valueGetter = propertyNameToGetter.get(propertyName);
-        if (valueGetter == null) {
-          //Branch 3
-          RuwaidInstrument.classifyMethodOneArgBranches[3] = 1;
-
-          // If our property is defined by a getter called getOAuth() then it is called "OAuth"
-          // because of Introspector.decapitalize. Therefore we want Introspector.decapitalize to
-          // be used for the setter too, so that you can write setOAuth(x). Meanwhile if the property
-          // is defined by a getter called oAuth() then it is called "oAuth", but you would still
-          // expect to be able to set it using setOAuth(x). Hence the second try using a decapitalize
-          // method without the quirky two-leading-capitals rule.
-          propertyName = PropertyNames.decapitalizeNormally(methodName.substring(3));
-          valueGetter = propertyNameToGetter.get(propertyName);
-        } else {
-          //Branch 4
-          RuwaidInstrument.classifyMethodOneArgBranches[4] = 1;
-        }
-      } else {
-        //Branch 5
-        RuwaidInstrument.classifyMethodOneArgBranches[5] = 1;
       }
     }
-    
     if (valueGetter == null || propertyNameToSetters == null) {
-      //Branch 6
-      RuwaidInstrument.classifyMethodOneArgBranches[6] = 1;
-
       // The second disjunct isn't needed but convinces control-flow checkers that
       // propertyNameToSetters can't be null when we call put on it below.
       errorReporter.reportError(
-          "Method does not correspond to a property of " + autoValueClass, method);
+              "Method does not correspond to a property of " + autoValueClass, method);
       checkForFailedJavaBean(method);
       return;
-    } else {
-      //Branch 7
-      RuwaidInstrument.classifyMethodOneArgBranches[7] = 1;
     }
+    methodTwo(propertyNameToSetters, propertyName, valueGetter, method);
+  }
 
+  private boolean isSetterMethod(String methodName) {
+    return methodName.startsWith("set") && methodName.length() > 3;
+  }
+
+  private void methodTwo(Multimap<String,PropertySetter> propertyNameToSetters, String propertyName, ExecutableElement valueGetter, ExecutableElement method) {
     Optional<Function<String, String>> function = getSetterFunction(valueGetter, method);
     if (function.isPresent()) {
-      //Branch 8
-      RuwaidInstrument.classifyMethodOneArgBranches[8] = 1;
-
       DeclaredType builderTypeMirror = MoreTypes.asDeclared(builderType.asType());
       ExecutableType methodMirror =
-          MoreTypes.asExecutable(typeUtils.asMemberOf(builderTypeMirror, method));
+              MoreTypes.asExecutable(typeUtils.asMemberOf(builderTypeMirror, method));
       if (TYPE_EQUIVALENCE.equivalent(methodMirror.getReturnType(), builderType.asType())) {
-        //Branch 9
-        RuwaidInstrument.classifyMethodOneArgBranches[9] = 1;
-
         TypeMirror parameterType = Iterables.getOnlyElement(methodMirror.getParameterTypes());
         propertyNameToSetters.put(
-            propertyName, new PropertySetter(method, parameterType, function.get()));
+                propertyName, new PropertySetter(method, parameterType, function.get()));
       } else {
-        //Branch 10
-        RuwaidInstrument.classifyMethodOneArgBranches[10] = 1;
-
         errorReporter.reportError(
-            "Setter methods must return " + builderType + typeParamsString(), method);
+                "Setter methods must return " + builderType + typeParamsString(), method);
       }
-    } else {
-      //Branch 11
-      RuwaidInstrument.classifyMethodOneArgBranches[11] = 1;
     }
   }
 
