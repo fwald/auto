@@ -167,6 +167,14 @@ abstract class TemplateVars {
   // @      ensures \result == throw AssertionError
   // @    |}
   // @  |}
+  // @  Tested: 
+  // @  * resourceName != null
+  // @  * resourceUrl != nulll
+  // @  * resourceUrl.getProtocol == "file"
+  // @  Untested:
+  // @  * resourceName == null
+  // @  * resourceUrl == nulll
+  // @  * resourceUrl.getProtocol == "jar"
   private static Reader readerFromUrl(String resourceName) throws IOException {
     URL resourceUrl = TemplateVars.class.getResource(resourceName);
     if (resourceUrl == null) {
