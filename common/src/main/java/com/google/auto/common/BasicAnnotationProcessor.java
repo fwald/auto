@@ -212,21 +212,29 @@ public abstract class BasicAnnotationProcessor extends AbstractProcessor {
     return deferredElements.build();
   }
 
+  /**
+   * Report all of the missing elements in the error stream.
+   */
   private void reportMissingElements(
       Map<String, ? extends Optional<? extends Element>> missingElements,
       Collection<ElementName> missingElementNames) {
     if (!missingElementNames.isEmpty()) {
       // Branch 0
+      // Before the expended test suite, this branch was never taken, resulting
+      // in the function not actually tested.
       iZafiroInstrument.reportMissingElementsBranches[0] = 1;
+
       ImmutableMap.Builder<String, Optional<? extends Element>> allMissingElements =
           ImmutableMap.builder();
       allMissingElements.putAll(missingElements);
       for (ElementName missingElement : missingElementNames) {
         // Branch 2
         iZafiroInstrument.reportMissingElementsBranches[2] = 1;
+
         if (!missingElements.containsKey(missingElement.name())) {
           // Branch 4
           iZafiroInstrument.reportMissingElementsBranches[4] = 1;
+
           allMissingElements.put(missingElement.name(), missingElement.getElement(elements));
         }
         else {
@@ -246,6 +254,7 @@ public abstract class BasicAnnotationProcessor extends AbstractProcessor {
         missingElements.entrySet()) {
       // Branch 6
       iZafiroInstrument.reportMissingElementsBranches[6] = 1;
+      
       Optional<? extends Element> missingElement = missingElementEntry.getValue();
       if (missingElement.isPresent()) {
         // Branch 8
