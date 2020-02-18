@@ -153,6 +153,20 @@ abstract class TemplateVars {
   // susceptible to the same bug. We only use this as fallback logic rather than doing it always,
   // because jars are memory-mapped by URLClassLoader, so loading a resource in the usual way
   // through the getResourceAsStream should be a lot more efficient than reopening the jar.
+  // @ Requires resourceName != null
+  // @ {|
+  // @    requires resourceUrl == null
+  // @    ensure \result == throw IllegalArgumentException
+  // @  also
+  // @    requires resourceUrl != null
+  // @    {|
+  // @      requires resourceUrl.getProtocol == "file" || resourceUrl.getProtocol == "jar"
+  // @      ensures \result == new InputStreamReader(in, StandardCharsets.UTF_8)
+  // @    also
+  // @      requires !(resourceUrl.getProtocol == "file" || resourceUrl.getProtocol == "jar")
+  // @      ensures \result == throw AssertionError
+  // @    |}
+  // @  |}
   private static Reader readerFromUrl(String resourceName) throws IOException {
     URL resourceUrl = TemplateVars.class.getResource(resourceName);
     if (resourceUrl == null) {
