@@ -286,6 +286,12 @@ public abstract class BasicAnnotationProcessor extends AbstractProcessor {
     }
   }
 
+  private boolean isValidPackage(Set<ElementName> validElementNames, ElementName annotatedPackageName,PackageElement annotatedPackageElement  ){
+    return validElementNames.contains(annotatedPackageName)
+                    || (!deferredElementNames.contains(annotatedPackageName)
+                    && validateElement(annotatedPackageElement));
+  }
+
   /**
    * Returns the valid annotated elements contained in all of the deferred elements. If none are
    * found for a deferred element, defers it again.
@@ -317,16 +323,19 @@ public abstract class BasicAnnotationProcessor extends AbstractProcessor {
           (annotationType == null)
               ? ImmutableSet.<Element>of()
               : roundEnv.getElementsAnnotatedWith(annotationType);
+
       for (Element annotatedElement :
           Sets.union(elementsAnnotatedWith, deferredElementsByAnnotation.get(annotationClass))) {
+
         if (annotatedElement.getKind().equals(PACKAGE)) {
           PackageElement annotatedPackageElement = (PackageElement) annotatedElement;
           ElementName annotatedPackageName =
               ElementName.forPackageName(annotatedPackageElement.getQualifiedName().toString());
-          boolean validPackage =
-              validElementNames.contains(annotatedPackageName)
-                  || (!deferredElementNames.contains(annotatedPackageName)
-                      && validateElement(annotatedPackageElement));
+
+          //INSERT REFACTOR HERE::::
+
+          boolean validPackage = isValidPackage(validElementNames, annotatedPackageName, annotatedPackageElement);
+   
           if (validPackage) {
             validElements.put(annotationClass, annotatedPackageElement);
             validElementNames.add(annotatedPackageName);
@@ -348,6 +357,7 @@ public abstract class BasicAnnotationProcessor extends AbstractProcessor {
             deferredElementNames.add(enclosingTypeName);
           }
         }
+
       }
     }
 
