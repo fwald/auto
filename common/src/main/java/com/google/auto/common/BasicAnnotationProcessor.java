@@ -268,6 +268,24 @@ public abstract class BasicAnnotationProcessor extends AbstractProcessor {
         target);
   }
 
+
+  //@Assignment3 Refactor
+  private void  preProcessDeferredElementEntries( ImmutableMap<String, Optional<? extends Element>> deferredElements,
+                                                 ImmutableSetMultimap.Builder<Class<? extends Annotation>, Element>   deferredElementsByAnnotationBuilder) {
+    for (Entry<String, Optional<? extends Element>> deferredTypeElementEntry :
+            deferredElements.entrySet()) {
+      Optional<? extends Element> deferredElement = deferredTypeElementEntry.getValue();
+      if (deferredElement.isPresent()) {
+        findAnnotatedElements(
+                deferredElement.get(),
+                getSupportedAnnotationClasses(),
+                deferredElementsByAnnotationBuilder);
+      } else {
+        deferredElementNames.add(ElementName.forTypeName(deferredTypeElementEntry.getKey()));
+      }
+    }
+  }
+
   /**
    * Returns the valid annotated elements contained in all of the deferred elements. If none are
    * found for a deferred element, defers it again.
@@ -275,22 +293,14 @@ public abstract class BasicAnnotationProcessor extends AbstractProcessor {
   private ImmutableSetMultimap<Class<? extends Annotation>, Element> validElements(
       ImmutableMap<String, Optional<? extends Element>> deferredElements,
       RoundEnvironment roundEnv) {
+
     ImmutableSetMultimap.Builder<Class<? extends Annotation>, Element>
         deferredElementsByAnnotationBuilder = ImmutableSetMultimap.builder();
-    for (Entry<String, Optional<? extends Element>> deferredTypeElementEntry :
-        deferredElements.entrySet()) {
-      Optional<? extends Element> deferredElement = deferredTypeElementEntry.getValue();
-      if (deferredElement.isPresent()) {
-        findAnnotatedElements(
-            deferredElement.get(),
-            getSupportedAnnotationClasses(),
-            deferredElementsByAnnotationBuilder);
-      } else {
-        deferredElementNames.add(ElementName.forTypeName(deferredTypeElementEntry.getKey()));
-      }
-    }
 
-    ImmutableSetMultimap<Class<? extends Annotation>, Element> deferredElementsByAnnotation =
+      preProcessDeferredElementEntries( deferredElements, deferredElementsByAnnotationBuilder) ;
+
+
+     ImmutableSetMultimap<Class<? extends Annotation>, Element> deferredElementsByAnnotation =
         deferredElementsByAnnotationBuilder.build();
 
     ImmutableSetMultimap.Builder<Class<? extends Annotation>, Element> validElements =
