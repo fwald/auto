@@ -98,6 +98,87 @@ public final class AutoFactoryProcessor extends AbstractProcessor {
     return false;
   }
 
+
+
+  //@Assignment3 Refactor
+  private void  prepareImplementationMethodDescriptors(
+          RoundEnvironment roundEnv,
+          ImmutableListMultimap.Builder<String, FactoryMethodDescriptor> indexedMethods ,
+          ImmutableSetMultimap.Builder<String, ImplementationMethodDescriptor>  implementationMethodDescriptorsBuilder
+          ){
+
+    for (Element element : roundEnv.getElementsAnnotatedWith(AutoFactory.class)) {
+      //Extract the declaration (if valid)
+      Optional<AutoFactoryDeclaration> declaration = declarationFactory.createIfValid(element);
+
+      if (declaration.isPresent()) {
+        //Extract information from declaration and put it in the implementationMethodDescriptorsBuilder...
+        String factoryName = declaration.get().getFactoryName();
+        TypeElement extendingType = declaration.get().extendingType();
+        implementationMethodDescriptorsBuilder.putAll(
+                factoryName, implementationMethods(extendingType, element));
+
+        //Put all implementingType from the declaration
+        for (TypeElement implementingType : declaration.get().implementingTypes()) {
+          implementationMethodDescriptorsBuilder.putAll(
+                  factoryName, implementationMethods(implementingType, element));
+        }
+      }
+
+
+      ImmutableSet<FactoryMethodDescriptor> descriptors =
+              factoryDescriptorGenerator.generateDescriptor(element);
+      for (FactoryMethodDescriptor descriptor : descriptors) {
+        indexedMethods.put(descriptor.factoryName(), descriptor);
+      }
+    }
+  }
+
+
+  final private static int publicTypeMask = 1;
+  final private static int allowSubclassesMask = 1 << 1;
+  final private static int skipCreationMask = 1 << 2;
+
+  //@Assignment3 Refactor
+  private int  processMethodDescriptor( Entry<String, Collection<FactoryMethodDescriptor>> entry,
+                                        ImmutableSortedSet.Builder<TypeMirror> implementing,
+                                        ImmutableSet.Builder<TypeMirror> extending
+                                        ){
+
+    boolean publicType = false ;
+    Boolean allowSubclasses = null;
+    boolean skipCreation = false;
+
+
+    //For each entry iterate over the method descriptor
+    for (FactoryMethodDescriptor methodDescriptor : entry.getValue()) {
+      extending.add(methodDescriptor.declaration().extendingType().asType());
+
+      //Iterate over each implementing type in the declaration
+      for (TypeElement implementingType : methodDescriptor.declaration().implementingTypes()) {
+        implementing.add(implementingType.asType());
+      }
+      publicType |= methodDescriptor.publicMethod();
+
+      if (allowSubclasses == null) {
+        allowSubclasses = methodDescriptor.declaration().allowSubclasses();
+      } else if (!allowSubclasses.equals(methodDescriptor.declaration().allowSubclasses())) {
+        skipCreation = true;
+        messager.printMessage(Kind.ERROR,
+                "Cannot mix allowSubclasses=true and allowSubclasses=false in one factory.",
+                methodDescriptor.declaration().target(),
+                methodDescriptor.declaration().mirror(),
+                methodDescriptor.declaration().valuesMap().get("allowSubclasses"));
+      }
+    }
+    int flags = 0;
+    flags |=  publicType ? publicTypeMask : 0;
+    flags |=  allowSubclasses ? allowSubclassesMask : 0;
+    flags |=  skipCreation ? skipCreationMask : 0;
+  return flags;
+  }
+
+
   private void doProcess(RoundEnvironment roundEnv) {
     for (Element element : roundEnv.getElementsAnnotatedWith(Provided.class)) {
       providedChecker.checkProvidedParameter(element);
@@ -107,31 +188,17 @@ public final class AutoFactoryProcessor extends AbstractProcessor {
         ImmutableListMultimap.builder();
     ImmutableSetMultimap.Builder<String, ImplementationMethodDescriptor>
         implementationMethodDescriptorsBuilder = ImmutableSetMultimap.builder();
-    for (Element element : roundEnv.getElementsAnnotatedWith(AutoFactory.class)) {
-      Optional<AutoFactoryDeclaration> declaration = declarationFactory.createIfValid(element);
-      if (declaration.isPresent()) {
-        String factoryName = declaration.get().getFactoryName();
-        TypeElement extendingType = declaration.get().extendingType();
-        implementationMethodDescriptorsBuilder.putAll(
-            factoryName, implementationMethods(extendingType, element));
-        for (TypeElement implementingType : declaration.get().implementingTypes()) {
-          implementationMethodDescriptorsBuilder.putAll(
-              factoryName, implementationMethods(implementingType, element));
-        }
-      }
 
-      ImmutableSet<FactoryMethodDescriptor> descriptors =
-          factoryDescriptorGenerator.generateDescriptor(element);
-      for (FactoryMethodDescriptor descriptor : descriptors) {
-        indexedMethods.put(descriptor.factoryName(), descriptor);
-      }
-    }
+
+     prepareImplementationMethodDescriptors(roundEnv, indexedMethods, implementationMethodDescriptorsBuilder);
 
     ImmutableSetMultimap<String, ImplementationMethodDescriptor>
         implementationMethodDescriptors = implementationMethodDescriptorsBuilder.build();
 
+
     for (Entry<String, Collection<FactoryMethodDescriptor>> entry
         : indexedMethods.build().asMap().entrySet()) {
+
       ImmutableSet.Builder<TypeMirror> extending = ImmutableSet.builder();
       ImmutableSortedSet.Builder<TypeMirror> implementing =
           ImmutableSortedSet.orderedBy(
@@ -143,26 +210,13 @@ public final class AutoFactoryProcessor extends AbstractProcessor {
                   return firstName.compareTo(secondName);
                 }
               });
-      boolean publicType = false;
-      Boolean allowSubclasses = null;
-      boolean skipCreation = false;
-      for (FactoryMethodDescriptor methodDescriptor : entry.getValue()) {
-        extending.add(methodDescriptor.declaration().extendingType().asType());
-        for (TypeElement implementingType : methodDescriptor.declaration().implementingTypes()) {
-          implementing.add(implementingType.asType());
-        }
-        publicType |= methodDescriptor.publicMethod();
-        if (allowSubclasses == null) {
-          allowSubclasses = methodDescriptor.declaration().allowSubclasses();
-        } else if (!allowSubclasses.equals(methodDescriptor.declaration().allowSubclasses())) {
-          skipCreation = true;
-          messager.printMessage(Kind.ERROR,
-              "Cannot mix allowSubclasses=true and allowSubclasses=false in one factory.",
-              methodDescriptor.declaration().target(),
-              methodDescriptor.declaration().mirror(),
-              methodDescriptor.declaration().valuesMap().get("allowSubclasses"));
-        }
-      }
+
+      int flags  =   processMethodDescriptor(   entry, implementing,  extending    );
+
+      boolean publicType = ((flags & publicTypeMask) == publicTypeMask) ;
+      Boolean allowSubclasses = ((flags & allowSubclassesMask) == allowSubclassesMask);
+      boolean skipCreation = ((flags & skipCreationMask) == skipCreationMask);
+
       if (!skipCreation) {
         try {
           factoryWriter.writeFactory(
@@ -180,6 +234,8 @@ public final class AutoFactoryProcessor extends AbstractProcessor {
       }
     }
   }
+
+
 
   private ImmutableSet<ImplementationMethodDescriptor> implementationMethods(
       TypeElement supertype, Element autoFactoryElement) {
