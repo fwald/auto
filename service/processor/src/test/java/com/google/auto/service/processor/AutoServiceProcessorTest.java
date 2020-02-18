@@ -164,7 +164,7 @@ public class AutoServiceProcessorTest {
       Set<String> serviceFiles =  ServicesFiles.readServiceFile(new FileInputStream(fo)) ;
       assert(serviceFiles.size() == 0);
     }
-    catch (Exception exp){
+    catch (IOException exp){
       //We need to catch exception since we are dealing with I/O. If this happens the test has failed though.
       assert(false);
     }
