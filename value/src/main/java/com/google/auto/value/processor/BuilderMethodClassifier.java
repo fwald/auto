@@ -346,6 +346,15 @@ class BuilderMethodClassifier {
    * only be a setter, meaning that it must look like {@code foo(T)} or {@code setFoo(T)}, where the
    * {@code AutoValue} class has a property called {@code foo} of type {@code T}.
    */
+  // @  Tested:
+  // @  * valueGetter != null
+  // @  * valueGetter == null && methodName.startsWith("set") && methodName.length() > 3
+  // @  * (valueGetter == null && methodName.startsWith("set") && methodName.length() > 3) && propertyNameToGetter.get(propertyName) == null
+  // @  * valueGetter == null || propertyNameToSetters == null
+  // @  * function.isPresent()
+  // @  * function.isPresent() && TYPE_EQUIVALENCE.equivalent(methodMirror.getReturnType(), builderType.asType())
+  // @  Untested:
+  // @  * function.isPresent() && !(TYPE_EQUIVALENCE.equivalent(methodMirror.getReturnType(), builderType.asType()))
   private void classifyMethodOneArg(ExecutableElement method) {
     String methodName = method.getSimpleName().toString();
     Map<String, ExecutableElement> propertyNameToGetter = getterToPropertyName.inverse();
