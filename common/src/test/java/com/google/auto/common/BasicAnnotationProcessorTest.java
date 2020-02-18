@@ -350,22 +350,28 @@ public class BasicAnnotationProcessorTest {
 
   // Added test for reportMissingElements
   @Test
-  public void properlyReportMissingElements() {
-    JavaFileObject classAFileObject = JavaFileObjects.forSourceLines(
-      "test.ClassA", 
-      "package test;", 
-      "",
-      "@" + NeverProcessed.class.getCanonicalName(), 
-      "public class ClassA {}");
+  public void properlyReportMissingElements_class() {
+    JavaFileObject classAFileObject = JavaFileObjects.forSourceLines("test.ClassA", "package test;", "",
+        "@" + NeverProcessed.class.getCanonicalName(), "public class ClassA {", "}");
 
     NeverProcessedProcessor neverProcessedProcessor = new NeverProcessedProcessor();
-    assertAbout(javaSources()).that(ImmutableList.of(classAFileObject))
-        .processedWith(neverProcessedProcessor).failsToCompile()
-        .withErrorCount(1)
-        .withErrorContaining("Check for compilation errors or a circular dependency");
-    //     .and()
-    //     .generatesFileNamed(SOURCE_OUTPUT, "test", "GeneratedByRequiresGeneratedCodeProcessor.java");
-    // assertThat(requiresGeneratedCodeProcessor.rejectedRounds).isEqualTo(0);
+    assertAbout(javaSources()).that(ImmutableList.of(classAFileObject)).processedWith(neverProcessedProcessor)
+        .failsToCompile().withErrorCount(1).withErrorContaining("Check for compilation errors or a circular dependency")
+        .and().withErrorContaining("class");
+  }
+
+  @Test
+  public void properlyReportMissingElements_2errors() {
+    JavaFileObject classAFileObject = JavaFileObjects.forSourceLines("test.ClassA", "package test;", "",
+        "public class ClassA {", "   @" + NeverProcessed.class.getCanonicalName(), "   public void method(){}", "}");
+    JavaFileObject packageFileObject = JavaFileObjects.forSourceLines("test.package-info",
+        "@" + NeverProcessed.class.getCanonicalName(), "package test;");
+
+    NeverProcessedProcessor neverProcessedProcessor = new NeverProcessedProcessor();
+    assertAbout(javaSources()).that(ImmutableList.of(classAFileObject, packageFileObject))
+        .processedWith(neverProcessedProcessor).failsToCompile().withErrorCount(2)
+        .withErrorContaining("Check for compilation errors or a circular dependency").and()
+        .withErrorContaining("class").and().withErrorContaining("package");
   }
 
   private static void generateClass(Filer filer, String generatedClassName) {
