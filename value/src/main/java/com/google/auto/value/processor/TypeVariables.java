@@ -131,6 +131,24 @@ final class TypeVariables {
    * parameters of its return type. We can see that these assumptions are met for the
    * {@code ImmutableMap.copyOf} example above.
    */
+  // @ require method != null && actualParameterType != null && targetType != null && typeUtils != null
+  // @ {|
+  // @    require (C1) !targetType.getKind().equals(TypeKind.DECLARED) || !method.getModifiers().contains(Modifier.STATIC) || method.getParameters().size() != 1
+  // @    ensures \result == false
+  // @  also
+  // @    require (C2) method.getTypeParameters.size() != targetTypeArguments.size()
+  // @    ensures \result == false
+  // @  also
+  // @    require !(C1) && !(C2)
+  // @    ensures \result == typeUtils.isAssignable(actualParameterType, substitutedParameterType);
+  // @  |}
+  // @  Tested:
+  // @  * method != null && actualParameterType != null && targetType != null && typeUtils != null
+  // @  * !(C1) && !(C2)
+  // @  * method.getTypeParameters.size() != targetTypeArguments.size()
+  // @  Untested:
+  // @  * method != null && actualParameterType != null && targetType != null && typeUtils != null
+  // @  * method.getTypeParameters.size() != targetTypeArguments.size()
   static boolean canAssignStaticMethodResult(
       ExecutableElement method,
       TypeMirror actualParameterType,
