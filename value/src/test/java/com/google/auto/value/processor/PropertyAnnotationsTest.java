@@ -487,6 +487,9 @@ public class PropertyAnnotationsTest {
   }
 
   // iZafiro's testNaN()
+  /* This test asserts that the NaN branches in AnnotationOutput::visitDouble and AnnotationOutput::visitFloat work.
+  A string containing NaN should be appended to the string builder.
+  The existing test suite and its conventions were used. */
   @Test
   public void testNaN() {
     JavaFileObject javaFileObject =
@@ -500,6 +503,9 @@ public class PropertyAnnotationsTest {
   }
 
   // iZafiro's testNegativeInfinities()
+  /* This test asserts that the NEGATIVE_INFINITY branches in AnnotationOutput::visitDouble and
+  AnnotationOutput::visitFloat work. A string containing NEGATIVE_INFINITY should be appended to the string builder.
+  The existing test suite and its conventions were used. */
   @Test
   public void testNegativeInfinities() {
     JavaFileObject javaFileObject =
@@ -513,6 +519,9 @@ public class PropertyAnnotationsTest {
   }
 
   // iZafiro's testPositiveInfinities()
+  /* This test asserts that the POSITIVE_INFINITY branches in AnnotationOutput::visitDouble and
+  AnnotationOutput::visitFloat work. A string containing POSITIVE_INFINITY should be appended to the string builder.
+  The existing test suite and its conventions were used. */
   @Test
   public void testPositiveInfinities() {
     JavaFileObject javaFileObject =
@@ -526,6 +535,9 @@ public class PropertyAnnotationsTest {
   }
 
   // iZafiro's testIllegalEscapeCharacterAnnotation
+  /* This test asserts that certain escape characters are not allowed into AnnotationOutput::appendEscaped, and thus
+  that some branches may not be reached in all possible ways without an artificial test.
+  The existing test suite and its conventions were used.*/
   @Test
   public void testIllegalEscapeCharacterAnnotation() {
     JavaFileObject javaFileObject =
@@ -541,11 +553,16 @@ public class PropertyAnnotationsTest {
   }
 
   // iZafiro's testBackslashCharactersAnnotation
+  /* This test asserts that the branches in AnnotationOutput::appendEscaped for escape characters beginning
+  with a backslash (quotes, tabulation, line break, carriage return, double backslash) in
+  AnnotationOutput::appendEscaped work. The only branch that wasn't tested was the one associated with the single quote
+  case.
+  The existing test suite and its conventions were used. */
   @Test
   public void testBackslashCharactersAnnotation() {
     JavaFileObject javaFileObject =
             new InputFileBuilder().setImports(getImports(PropertyAnnotationsTest.class)).addAnnotations(ImmutableList.of(
-                    TEST_ANNOTATION + "(testBoolean = true, testString = \" Lorem\t\\\"ipsum\\\"\tdolor\tsit\tamet...\\n\\r \\\\ " + (char)0x19 + (char)0x80 + (char)0x14 + "\", testChar = 'a')")).build();
+                    TEST_ANNOTATION + "(testBoolean = true, testString = \" Lorem\t\\\"ipsum\\\"\tdolor\tsit\tamet...\\n\\r \\\\ \", testChar = 'a')")).build();
 
     assertAbout(javaSource())
             .that(javaFileObject)
@@ -554,6 +571,9 @@ public class PropertyAnnotationsTest {
   }
 
   // iZafiro's testTypecastCharactersAnnotation
+  /* This test asserts that the branches named "special" in the AnnotationOutput::appendEscaped requirements
+   documentation work.
+  The existing test suite and its conventions were used. */
   @Test
   public void testTypecastCharactersAnnotation() {
     JavaFileObject javaFileObject =

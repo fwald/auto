@@ -80,6 +80,15 @@ final class AnnotationOutput {
       return null;
     }
 
+    /*
+    The following two methods take a double (resp. float) as an argument and append an escaped version of these
+    variables to a Stringbuilder, that is also given as an argument. These methods are called by the annotation builder
+    upon compiling an annotation.
+
+    According to the first Clover report, the only case covered by the tests (all of which are in
+    PropertyAnnotationsTest) is the else clause. All other branches are untested. New unit tests will be included to
+    test the branches involving NaN, POSITIVE_INFINITY and NEGATIVE_INFINITY separately.
+    */
     @Override
     public Void visitDouble(double d, StringBuilder sb) {
       if (Double.isNaN(d)) {
@@ -241,6 +250,17 @@ final class AnnotationOutput {
     return sb.append('\'');
   }
 
+  /*
+  This method takes a character as an argument and appends an escaped version of this character to a Stringbuilder,
+  that is also given as an argument. This method is called by the annotation builder upon compiling an annotation.
+
+  According to the first Clover report, the only case covered by the tests (all of which are in PropertyAnnotationsTest
+  and AutoValueCompilationTest) is the else if clause in the default case. This clause is most likely accessed because
+  the expression after the or logical operator evaluates to true. All other branches are untested. In the new tests the
+  branches involving escape characters beginning with backslashes will be called "backslash", and all other branches
+  (those involving expressions of the form c < int, including the first branch in the else if clause, and also the only
+  else clause) will be called "special".
+  */
   private static void appendEscaped(StringBuilder sb, char c) {
     switch (c) {
       case '\\':
