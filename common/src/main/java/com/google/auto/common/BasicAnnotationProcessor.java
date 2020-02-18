@@ -285,7 +285,8 @@ public abstract class BasicAnnotationProcessor extends AbstractProcessor {
       }
     }
   }
-
+  
+  //@Assignment3 Refactor
   private boolean isValidPackage(Set<ElementName> validElementNames, ElementName annotatedPackageName,PackageElement annotatedPackageElement  ){
     return validElementNames.contains(annotatedPackageName)
                     || (!deferredElementNames.contains(annotatedPackageName)
@@ -332,11 +333,8 @@ public abstract class BasicAnnotationProcessor extends AbstractProcessor {
           ElementName annotatedPackageName =
               ElementName.forPackageName(annotatedPackageElement.getQualifiedName().toString());
 
-          //INSERT REFACTOR HERE::::
-
-          boolean validPackage = isValidPackage(validElementNames, annotatedPackageName, annotatedPackageElement);
-   
-          if (validPackage) {
+          //@Assignment3 Refactor here:
+          if (isValidPackage(validElementNames, annotatedPackageName, annotatedPackageElement)) {
             validElements.put(annotationClass, annotatedPackageElement);
             validElementNames.add(annotatedPackageName);
           } else {
