@@ -23,6 +23,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.io.*;
+import java.util.Set;
+
 /**
  * Tests the {@link AutoServiceProcessor}.
  */
@@ -63,5 +66,107 @@ public class AutoServiceProcessorTest {
         .processedWith(new AutoServiceProcessor())
         .failsToCompile()
         .withErrorContaining(MISSING_SERVICES_ERROR);
+  }
+
+  //@ASSIGNMENT 3
+
+  @Test
+  public void FW_readServiceFileTest1() {
+    //Test the case when the argument is not a valid input stream.
+    // readServiceFile should throw an exception.
+    try {
+      ServicesFiles.readServiceFile(null);
+    }
+    catch (Exception exp){
+      assert(true);
+      return;
+    }
+    assert(false); // If we reach this, the test have failed.
+  }
+
+  @Test
+  public void FW_readServiceFileTest2() {
+  //Test the case where we have a valid input stream that reads from a file.
+  // The method expects to read a Services file. Where each line contain a Service name.
+  //We should get back a set of strings of the Service names
+
+    try {
+      String fName = "testfile.txt";
+      FileWriter fw = new FileWriter(fName);
+      String service1 = "Service1";
+      String service2 = "Service2";
+
+      fw.write(service1 + "\n");
+      fw.write(service2);
+
+      fw.flush();
+      fw.close();
+
+      File fo = new File(fName);
+      Set<String> serviceFiles =  ServicesFiles.readServiceFile(new FileInputStream(fo)) ;
+      assert(serviceFiles.size() == 2);
+      assert(serviceFiles.contains(service1));
+      assert(serviceFiles.contains(service2));
+
+    }
+    catch (Exception exp){
+      //We need to catch exception since we are dealing with I/O. If this happens the test has failed though.
+      assert(false);
+    }
+  }
+  @Test
+  public void FW_readServiceFileTest3() {
+    //Test the case where we have a valid input stream that reads from a file.
+    // The method expects to read a Services file. Where each line contain a Service name.
+    //Lines can also include comments, indicated with a '#'. All text after this line should be removed
+
+    try {
+      String fName = "testfile.txt";
+      FileWriter fw = new FileWriter(fName);
+
+      String service1 = "Service1";
+      String service2 = "Service2";
+
+      String line1 = service1 + "#With some added comments!";
+      String line2 = "#Here we have a comment!\n" + service2;
+      fw.write(line1);
+      fw.write(line2);
+
+      fw.flush();
+      fw.close();
+
+      File fo = new File(fName);
+      Set<String> serviceFiles =  ServicesFiles.readServiceFile(new FileInputStream(fo)) ;
+      assert(serviceFiles.size() == 2);
+      assert(serviceFiles.contains("Service1"));
+      assert(serviceFiles.contains("Service2"));
+
+    }
+    catch (Exception exp){
+      //We need to catch exception since we are dealing with I/O. If this happens the test has failed though.
+      assert(false);
+    }
+  }
+
+  @Test
+  public void FW_readServiceFileTest4() {
+    //Test the case where we have a valid input stream that reads from a file.
+    // The file is empty though.
+    //We should get back an empty Set of Strings.
+
+    try {
+      String fName = "testfile2.txt";
+      FileWriter fw = new FileWriter(fName);
+      fw.flush();
+      fw.close();
+
+      File fo = new File(fName);
+      Set<String> serviceFiles =  ServicesFiles.readServiceFile(new FileInputStream(fo)) ;
+      assert(serviceFiles.size() == 0);
+    }
+    catch (Exception exp){
+      //We need to catch exception since we are dealing with I/O. If this happens the test has failed though.
+      assert(false);
+    }
   }
 }

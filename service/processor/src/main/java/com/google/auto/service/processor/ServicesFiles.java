@@ -60,20 +60,30 @@ final class ServicesFiles {
     Closer closer = Closer.create();
     try {
       // TODO(gak): use CharStreams
+
       BufferedReader r = closer.register(new BufferedReader(new InputStreamReader(input, UTF_8)));
       String line;
       while ((line = r.readLine()) != null) {
         int commentStart = line.indexOf('#');
         if (commentStart >= 0) {
+          //@Assignment3: this is reached when one line in the inpustream contains a '#' which makes the following characters
+          //treated as comments
           line = line.substring(0, commentStart);
         }
         line = line.trim();
         if (!line.isEmpty()) {
+          //@Assignment 3: this is reached when the line is not empty. i.e. there are characters in the input stream
           serviceClasses.add(line);
         }
       }
+      //@Assignment3: this is reached when we could read some data from the input stream and
+      //add it to the serviceClasses HashSet.
       return serviceClasses;
+
     } catch (Throwable t) {
+      //@Assignment3: this is reached when the BufferedReader throws an exception. For instance, if the InputStream input is not
+      // valid, i.e. null.
+
       throw closer.rethrow(t);
     } finally {
       closer.close();
