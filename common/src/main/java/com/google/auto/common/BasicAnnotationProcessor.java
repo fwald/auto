@@ -285,7 +285,15 @@ public abstract class BasicAnnotationProcessor extends AbstractProcessor {
       }
     }
   }
-  
+
+  //@Assignment3 Refactor
+  private boolean isValidEnclosingType(Set<ElementName> validElementNames, TypeElement enclosingType, ElementName enclosingTypeName )  {
+    return
+            validElementNames.contains(enclosingTypeName)
+                    || (!deferredElementNames.contains(enclosingTypeName)
+                    && validateElement(enclosingType));
+  }
+
   //@Assignment3 Refactor
   private boolean isValidPackage(Set<ElementName> validElementNames, ElementName annotatedPackageName,PackageElement annotatedPackageElement  ){
     return validElementNames.contains(annotatedPackageName)
@@ -344,11 +352,8 @@ public abstract class BasicAnnotationProcessor extends AbstractProcessor {
           TypeElement enclosingType = getEnclosingType(annotatedElement);
           ElementName enclosingTypeName =
               ElementName.forTypeName(enclosingType.getQualifiedName().toString());
-          boolean validEnclosingType =
-              validElementNames.contains(enclosingTypeName)
-                  || (!deferredElementNames.contains(enclosingTypeName)
-                      && validateElement(enclosingType));
-          if (validEnclosingType) {
+
+          if (isValidEnclosingType(validElementNames, enclosingType, enclosingTypeName)) {
             validElements.put(annotationClass, annotatedElement);
             validElementNames.add(enclosingTypeName);
           } else {
