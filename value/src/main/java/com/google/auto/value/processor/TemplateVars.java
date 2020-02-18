@@ -154,6 +154,7 @@ abstract class TemplateVars {
   // because jars are memory-mapped by URLClassLoader, so loading a resource in the usual way
   // through the getResourceAsStream should be a lot more efficient than reopening the jar.
   // @ Requires resourceName != null
+  // @ resourceUrl = getResource(resourceName)
   // @ {|
   // @    requires resourceUrl == null
   // @    ensure \result == throw IllegalArgumentException
