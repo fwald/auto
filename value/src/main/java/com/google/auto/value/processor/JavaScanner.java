@@ -15,6 +15,8 @@
  */
 package com.google.auto.value.processor;
 
+import java.util.HashMap;
+
 /**
  * A simplistic Java scanner. This scanner returns a sequence of tokens that can be used to
  * reconstruct the source code. Since the source code is coming from a string, the scanner in fact
@@ -54,29 +56,31 @@ class JavaScanner {
 
   /** Returns the position at which this token ends and the next token begins. */
   int tokenEnd(int start) {
+    boolean[] cases = new boolean[4];
+    char testChar;
+    char testChar2;
     if (start >= s.length()) {
       return s.length();
     }
-    switch (s.charAt(start)) {
-      case ' ':
-      case '\n':
-        return spaceEnd(start);
-      case '/':
-        if (s.charAt(start + 1) == '*') {
-          return blockCommentEnd(start);
-        } else if (s.charAt(start + 1) == '/') {
-          return lineCommentEnd(start);
-        } else {
-          return start + 1;
-        }
-      case '\'':
-      case '"':
-      case '`':
-        return quoteEnd(start);
-      default:
-        // Every other character is considered to be its own token.
-        return start + 1;
+    testChar = s.charAt(start);
+    cases[0] = (testChar == ' ' || testChar == '\n');
+    if (cases[0]) {
+      return spaceEnd(start);
     }
+    testChar2 = s.charAt(start + 1);
+    cases[1] = (testChar == '/' && testChar2 == '*');
+    cases[2] = (testChar == '/' && testChar2 == '/');
+    if (cases[1]) {
+      return blockCommentEnd(start);
+    }
+    else if (cases[2]) {
+      return lineCommentEnd(start);
+    }
+    cases[3] = (testChar == '\'' || testChar == '"' || testChar == '`');
+    if (cases[3]) {
+      return quoteEnd(start);
+    }
+    return start + 1;
   }
 
   private int spaceEnd(int start) {
