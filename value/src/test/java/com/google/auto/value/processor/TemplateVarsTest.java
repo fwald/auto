@@ -74,6 +74,9 @@ public class TemplateVarsTest {
     }
   }
 
+  /*
+  Look for a resource which doesn't exists, expected behaviour: Throw IllegalargumentException
+  */
   @Test
   public void testReaderFromUrl_IllegalArgumentException() {
     try{
@@ -85,6 +88,9 @@ public class TemplateVarsTest {
     }
   }
 
+  /*
+  Look for a resource which exists in a jar package, expected behaviours: Return a Reader which is not null.
+  */
   @Test
   public void testReaderFromUrl_JarProtocol() throws IOException{
     Assert.assertNotNull(TemplateVars.readerURL("package-info.java"));
