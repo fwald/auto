@@ -340,7 +340,8 @@ class BuilderMethodClassifier {
             autoValueClass, builderGetterType, originalGetterType);
     errorReporter.reportError(error, builderGetter);
   }
-
+  
+  // DiffStarter - CMOA
   /**
    * Classifies a method given that it has one argument. Currently, a method with one argument can
    * only be a setter, meaning that it must look like {@code foo(T)} or {@code setFoo(T)}, where the
@@ -378,14 +379,14 @@ class BuilderMethodClassifier {
       checkForFailedJavaBean(method);
       return;
     }
-    methodTwo(propertyNameToSetters, propertyName, valueGetter, method);
+    classifyMethodOneArgHelper(propertyNameToSetters, propertyName, valueGetter, method);
   }
 
   private boolean isSetterMethod(String methodName) {
     return methodName.startsWith("set") && methodName.length() > 3;
   }
 
-  private void methodTwo(Multimap<String,PropertySetter> propertyNameToSetters, String propertyName, ExecutableElement valueGetter, ExecutableElement method) {
+  private void classifyMethodOneArgHelper(Multimap<String,PropertySetter> propertyNameToSetters, String propertyName, ExecutableElement valueGetter, ExecutableElement method) {
     Optional<Function<String, String>> function = getSetterFunction(valueGetter, method);
     if (function.isPresent()) {
       DeclaredType builderTypeMirror = MoreTypes.asDeclared(builderType.asType());
