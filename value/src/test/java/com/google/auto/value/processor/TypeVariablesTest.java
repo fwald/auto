@@ -179,14 +179,20 @@ public class TypeVariablesTest {
             copyOf, immutableMapStringNumber, immutableMapStringInteger, typeUtils))
         .isFalse();
     // New tests
-    // Cover branch 0:
+    /*
+    Cover branch 0: Sets the kind of the targetType(primitive) to TypeKind.INT which is not equal to TypeKind.DECLARED, 
+    expected behaviour: Return false from first condition.
+    */
     TypeMirror primitive = typeUtils.getPrimitiveType(TypeKind.INT);
     assertThat(primitive.getKind().equals(TypeKind.DECLARED)).isFalse();
     expect.that(
             TypeVariables.canAssignStaticMethodResult(
                     copyOf, immutableMapStringNumber, primitive, typeUtils))
             .isFalse();
-    // Cover branch 2:
+    /*
+    Cover branch 2: Sets the amount of Type parameters in method(copyOf) to two and the amount of arguments in
+    targetType(argDiff) to one, expected behaviours: Return false from the second condition given they are not equal.
+    */
     TypeMirror argDiff =
             typeUtils.getDeclaredType(list, string.asType());
     expect.that(
